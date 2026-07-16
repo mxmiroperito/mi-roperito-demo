@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi Roperito · Boutique en Orizaba</title>
+<meta name="description" content="Moda que empodera, estilo que define, tú que inspiras. Boutique en el centro de Orizaba, Veracruz.">
+<meta name="theme-color" content="#CE6C88">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23FBF3EF'/><circle cx='50' cy='50' r='30' fill='%23CE6C88'/><text x='50' y='60' font-size='24' text-anchor='middle' fill='white' font-family='Georgia'>mr</text></svg>">
+</head>
+<body>
+
+<!-- MARQUESINA -->
+<div class="ann">
+  <div class="ann__run">
+    <span id="ann-a"></span><span id="ann-b" aria-hidden="true"></span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="hd">
+  <!-- Escritorio -->
+  <div class="hd__in">
+    <a class="logo" href="#/" aria-label="Mi Roperito, inicio">
+      <b>mi <em>roperito</em></b>
+      <i>boutique · Orizaba</i>
+    </a>
+    <nav class="nav">
+      <a class="is-sale" href="#/c/novedades">Ofertas</a>
+      <a href="#/c/novedades">Novedades</a>
+      <div class="mega-wrap">
+        <button id="mega-btn" aria-expanded="false">Categorías ▾</button>
+        <div class="mega" id="mega" hidden></div>
+      </div>
+      <a href="#/c/vestidos">Vestidos</a>
+      <a href="#/c/deportiva">Deportiva</a>
+    </nav>
+    <div class="hd__acts">
+      <button id="search-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>BUSCAR
+      </button>
+      <button aria-label="Cuenta">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <button aria-label="Favoritos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.3-9.2-8.4C1.3 8.7 2.6 5.5 5.6 5.1 7.5 4.8 9 5.9 12 8.7c3-2.8 4.5-3.9 6.4-3.6 3 .4 4.3 3.6 2.8 6.5C19 15.7 12 20 12 20Z"/></svg>
+      </button>
+      <button class="cart-btn" id="cart-btn" aria-label="Carrito">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H8.7a1.5 1.5 0 0 1-1.5-1.3L6 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+        <span class="pill" id="pill" hidden>0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Móvil -->
+  <div class="hd__mob">
+    <div class="hd__mob-top">
+      <button class="icon-btn" id="drw-btn" aria-label="Menú" style="justify-self:start">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a class="logo" href="#/"><b>mi <em>roperito</em></b><i>boutique · Orizaba</i></a>
+      <div class="hd__mob-r">
+        <button class="icon-btn" aria-label="Buscar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <button class="icon-btn" id="cart-btn-m" aria-label="Carrito">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H8.7a1.5 1.5 0 0 1-1.5-1.3L6 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+          <span class="pill" id="pill-m" hidden style="top:2px;right:2px">0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- CONTENIDO (lo pinta app.js según la ruta) -->
+<main id="app"></main>
+
+<!-- FOOTER -->
+<footer class="ft">
+  <div class="ft__g">
+    <div class="ft__brand">
+      <div class="ft__b">mi <em>roperito</em></div>
+      <p class="ft__slog">Moda que empodera, estilo que define, tú que inspiras.</p>
+      <div class="ft__soc">
+        <a href="https://www.instagram.com/_mi.roperito" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@miroperitoo" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.1 1.8 3.7 3.9 4v3c-1.5 0-2.9-.5-3.9-1.2v6.3c0 3.4-2.4 5.9-5.7 5.9-3.2 0-5.4-2.2-5.4-5.2 0-3 2.3-5.3 5.5-5.3.3 0 .7 0 1 .1v3.1c-.3-.1-.7-.2-1-.2-1.5 0-2.5 1-2.5 2.3 0 1.4 1 2.3 2.4 2.3 1.6 0 2.7-1.1 2.7-3V3h3z"/></svg>
+        </a>
+        <a href="https://wa.me/522722248037" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg width="17" height="17" viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.2c1.5.8 3.1 1.2 4.7 1.2 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.5 0-3-.4-4.3-1.2l-.3-.2-4.3 1.3 1.3-4.1-.2-.3c-1.3-1.6-2-3.6-2-5.6C6.2 9.5 10.6 5.2 16 5.2s9.8 4.4 9.8 9.7-4.4 9.9-9.8 9.9z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="ft__col">
+      <button class="ft__acc-t">Tienda <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      <h3>Tienda</h3>
+      <ul id="ft-cats"></ul>
+    </div>
+
+    <div class="ft__col">
+      <button class="ft__acc-t">Ayuda <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      <h3>Ayuda</h3>
+      <ul>
+        <li>Preguntas frecuentes</li>
+        <li>Guía de tallas</li>
+        <li>Métodos de pago</li>
+        <li><a href="https://wa.me/522722248037" target="_blank" rel="noopener">Contacto</a></li>
+      </ul>
+    </div>
+
+    <div class="ft__col">
+      <button class="ft__acc-t">¿Dónde estamos? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      <h3>¿Dónde estamos?</h3>
+      <p>
+        Sur 5 #260, entre Oriente 4 y 6 (local rosa)<br>
+        Centro, Orizaba, Ver.<br>
+        Lun a Sáb · 10:00 – 20:00<br>
+        Tel. +52 272 224 8037
+      </p>
+    </div>
+  </div>
+
+  <div class="ft__bar">
+    <div class="ft__bar-in">
+      <span>© 2026 Mi Roperito. Todos los derechos reservados.</span>
+      <div class="ft__pay">
+        <span>TRANSFERENCIA</span><span>DEPÓSITO</span><span>EFECTIVO</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="bnav-pad"></div>
+
+<!-- NAV INFERIOR (móvil) -->
+<nav class="bnav">
+  <a href="#/" id="bn-home">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+    <span>Inicio</span>
+  </a>
+  <button id="bn-cats">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
+    <span>Categorías</span>
+  </button>
+  <button id="bn-cart">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 7h12l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H8.7a1.5 1.5 0 0 1-1.5-1.3L6 7Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+    <span>Carrito</span>
+  </button>
+  <a href="https://wa.me/522722248037" target="_blank" rel="noopener">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Cuenta</span>
+  </a>
+</nav>
+
+<!-- WHATSAPP -->
+<a class="wa" href="https://wa.me/522722248037" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.2c1.5.8 3.1 1.2 4.7 1.2 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.5 0-3-.4-4.3-1.2l-.3-.2-4.3 1.3 1.3-4.1-.2-.3c-1.3-1.6-2-3.6-2-5.6C6.2 9.5 10.6 5.2 16 5.2s9.8 4.4 9.8 9.7-4.4 9.9-9.8 9.9z"/></svg>
+</a>
+
+<div class="backdrop" id="mega-bd" hidden></div>
+
+<!-- DRAWER DE NAVEGACIÓN -->
+<div class="ov" id="drw">
+  <aside class="pnl pnl--l">
+    <div class="pnl__hd">
+      <span style="font:600 22px/1 var(--display)">mi <em style="font-style:italic;color:var(--accent)">roperito</em></span>
+      <button class="x" data-close="drw" aria-label="Cerrar">×</button>
+    </div>
+    <div class="pnl__bd" id="drw-body"></div>
+    <div class="pnl__ft">
+      <p>Sur 5 #260, Centro · Orizaba, Ver.</p>
+      <p>Lun a Sáb · 10:00 – 20:00</p>
+    </div>
+  </aside>
+</div>
+
+<!-- DRAWER DE CARRITO -->
+<div class="ov" id="cart">
+  <aside class="pnl pnl--r">
+    <div class="pnl__hd">
+      <h2>Tu carrito</h2>
+      <button class="x" data-close="cart" aria-label="Cerrar">×</button>
+    </div>
+    <div id="cart-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden"></div>
+  </aside>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
