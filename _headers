@@ -3,11 +3,17 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
-/img/*
-  Cache-Control: public, max-age=31536000, immutable
-
+# Los archivos no llevan hash en el nombre (style.css, no style.a1b2c3.css),
+# así que NO se pueden cachear por tiempo: el navegador se quedaría con la
+# versión vieja tras cada deploy. `no-cache` no significa "no guardar", sino
+# "pregunta siempre": si no cambió, el servidor responde 304 y no se descarga.
 /css/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: no-cache
 
 /js/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: no-cache
+
+# Mismo motivo: si se reemplaza una foto conservando el nombre, con un cache
+# largo la vieja quedaría congelada en el navegador durante meses.
+/img/*
+  Cache-Control: no-cache
