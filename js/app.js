@@ -41,7 +41,7 @@ function tile(p) {
 
 function tileEditorial(e) {
   return `
-    <a class="tile tile--ed tile--${e.span}" href="#/c/${e.cat}">
+    <a class="tile tile--ed tile--${e.span}" href="${e.href}">
       <img src="${IMG(e.foto)}" alt="${esc(e.titulo)}" loading="lazy">
       <div class="tile__ed">
         <h3>${esc(e.titulo)}</h3>
@@ -88,7 +88,6 @@ function vistaInicio() {
         <img src="${IMG(c.foto)}" alt="" loading="lazy">
         <b>${esc(c.corto)}</b>
       </div>
-      <span class="cat__d">Desde ${desdeDe(c.slug)}</span>
     </a>`).join("");
 
   // Mosaico: productos + bloques editoriales intercalados, todo pegado.
@@ -101,7 +100,7 @@ function vistaInicio() {
   piezas.push(tileEditorial(EDITORIALES[2]));
 
   const moods = MOODS.map(m => `
-    <a class="mood" href="#/c/${m.cat}">
+    <a class="mood" href="${m.href}">
       <img src="${IMG(m.foto)}" alt="${esc(m.titulo)}" loading="lazy">
       <div class="mood__t">
         <h3>${esc(m.titulo)}</h3>
@@ -112,7 +111,7 @@ function vistaInicio() {
 
   return `
   <section class="hero">
-    <img src="${IMG("bata-kimono.jpg")}" alt="Nueva temporada Mi Roperito">
+    <img src="img/banner.jpg" alt="Nueva temporada Mi Roperito">
     <div class="hero__txt">
       <span class="hero__kick">♡ Nueva temporada</span>
       <h1 class="hero__ttl">Novedades</h1>
@@ -127,6 +126,7 @@ function vistaInicio() {
   </section>
 
   <a class="band" href="#/c/novedades">
+    <img src="img/banner.jpg" alt="">
     <div class="band__in">
       <span class="band__kick">Primavera · Verano</span>
       <h2 class="band__ttl">La colección que vas a amar</h2>
@@ -152,11 +152,11 @@ function vistaInicio() {
   ${bloqueInfo()}`;
 }
 
-function vistaCategoria(slug, orden = "destacados") {
+function vistaCategoria(slug, sub = "", orden = "destacados") {
   const cat = CATS.find(c => c.slug === slug);
   if (!cat) return vistaInicio();
 
-  let lista = [...productosDe(slug)];
+  let lista = [...productosDe(slug, sub)];
   const pr = p => p.promo || p.price;
   if (orden === "menor") lista.sort((a, b) => pr(a) - pr(b));
   if (orden === "mayor") lista.sort((a, b) => pr(b) - pr(a));
@@ -166,13 +166,27 @@ function vistaCategoria(slug, orden = "destacados") {
     ? `<div class="grid">${lista.map(tile).join("")}</div>`
     : `<p class="empty">Muy pronto tendremos piezas nuevas en esta categoría.</p>`;
 
+  // Filtros de subcategoría (solo donde existen)
+  const subs = SUBS[slug] || [];
+  const chips = subs.length ? `
+    <div class="subs">
+      <a class="subs__c${!sub ? " is-on" : ""}" href="#/c/${slug}">Todo</a>
+      ${subs.map(s => `<a class="subs__c${sub === s.slug ? " is-on" : ""}" href="#/c/${slug}/${s.slug}">${esc(s.name)}</a>`).join("")}
+    </div>` : "";
+
+  const titulo = sub ? nombreSub(slug, sub) : cat.name;
+
   return `
   <div class="cat-hd">
-    <div class="crumbs"><a href="#/">Inicio</a> / <span style="color:var(--ink)">${esc(cat.name)}</span></div>
+    <div class="crumbs">
+      <a href="#/">Inicio</a> /
+      ${sub ? `<a href="#/c/${slug}">${esc(cat.name)}</a> / ` : ""}
+      <span style="color:var(--ink)">${esc(titulo)}</span>
+    </div>
     <div class="cat-hd__r">
       <div>
-        <span class="sec-hd__kick">Colección</span>
-        <h1>${esc(cat.name)}</h1>
+        <span class="sec-hd__kick">${sub ? esc(cat.name) : "Colección"}</span>
+        <h1>${esc(titulo)}</h1>
         <p class="cat-hd__n">${lista.length} ${lista.length === 1 ? "pieza" : "piezas"}</p>
       </div>
       <div class="sortbox">
@@ -185,6 +199,7 @@ function vistaCategoria(slug, orden = "destacados") {
         </select>
       </div>
     </div>
+    ${chips}
   </div>
   ${cuerpo}
   ${bloqueInfo()}`;
@@ -201,16 +216,19 @@ function vistaProducto(id) {
 
   const msg = encodeURIComponent(`¡Hola! Me interesa "${p.name}" (${money(p.promo || p.price)}). ¿Sigue disponible?`);
 
+  const subNom = p.sub ? nombreSub(p.cat, p.sub) : "";
+
   return `
   <div class="pdp">
     <div class="crumbs">
       <a href="#/">Inicio</a> / <a href="#/c/${p.cat}">${esc(cat.name)}</a> /
+      ${subNom ? `<a href="#/c/${p.cat}/${p.sub}">${esc(subNom)}</a> / ` : ""}
       <span style="color:var(--ink)">${esc(p.name)}</span>
     </div>
     <div class="pdp__g">
       <div class="pdp__img"><img src="${IMG(p.foto)}" alt="${esc(p.name)}"></div>
       <div>
-        <span class="pdp__k">${esc(cat.name)}</span>
+        <span class="pdp__k">${esc(subNom || cat.name)}</span>
         <h1 class="pdp__t">${esc(p.name)}</h1>
         <div class="pdp__pr">${precio}</div>
         <p class="pdp__d">${esc(p.desc)}</p>
@@ -331,27 +349,51 @@ function cerrarMega() {
   $("#mega-btn").setAttribute("aria-expanded", "false");
 }
 
-// Enlaces de categorías en mega menú, drawer y footer
-$("#mega").innerHTML = CATS.map(c =>
-  `<a href="#/c/${c.slug}">${esc(c.name)}<span>→</span></a>`).join("");
+// Enlaces de categorías en mega menú, drawer y footer.
+// Donde hay subcategorías, se listan debajo de su categoría.
+$("#mega").innerHTML = CATS.map(c => {
+  const subs = SUBS[c.slug] || [];
+  return `
+    <div class="mega__col">
+      <a class="mega__t" href="#/c/${c.slug}">${esc(c.name)}<span>→</span></a>
+      ${subs.map(s => `<a class="mega__s" href="#/c/${c.slug}/${s.slug}">${esc(s.name)}</a>`).join("")}
+    </div>`;
+}).join("");
 
 $("#drw-body").innerHTML = `
   <span style="display:block;padding:8px 12px 4px;font:600 10px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Categorías</span>
-  ${CATS.map(c => `<a class="drw-link" href="#/c/${c.slug}">${esc(c.name)}<span>→</span></a>`).join("")}
+  ${CATS.map(c => {
+    const subs = SUBS[c.slug] || [];
+    return `
+      <a class="drw-link" href="#/c/${c.slug}">${esc(c.name)}<span>→</span></a>
+      ${subs.map(s => `<a class="drw-sub" href="#/c/${c.slug}/${s.slug}">${esc(s.name)}</a>`).join("")}`;
+  }).join("")}
   <div style="height:1px;background:var(--line);margin:12px"></div>
   <a href="${TIENDA.wa}" target="_blank" rel="noopener" style="font:500 14px/1 var(--body)">Escríbenos por WhatsApp</a>`;
 
-$("#ft-cats").innerHTML = CATS.slice(1, 6).map(c =>
-  `<li><a href="#/c/${c.slug}">${esc(c.name)}</a></li>`).join("");
+$("#ft-cats").innerHTML = [
+  ["Novedades", "#/c/novedades"],
+  ["Vestidos", "#/c/ropa/vestidos"],
+  ["Blusas y Tops", "#/c/ropa/blusas"],
+  ["Jeans y Pantalones", "#/c/ropa/jeans"],
+  ["Deportiva", "#/c/deportiva"],
+].map(([n, h]) => `<li><a href="${h}">${esc(n)}</a></li>`).join("");
 
 // ---------- Router ----------
+
+// "#/c/ropa/vestidos" -> ["ropa", "vestidos"]
+function rutaCat() {
+  const [slug, sub = ""] = location.hash.slice(4).split("/");
+  return [slug, sub];
+}
 
 function render() {
   const h = location.hash || "#/";
   const app = $("#app");
 
   if (h.startsWith("#/c/")) {
-    app.innerHTML = vistaCategoria(h.slice(4));
+    const [slug, sub] = rutaCat();
+    app.innerHTML = vistaCategoria(slug, sub);
   } else if (h.startsWith("#/p/")) {
     app.innerHTML = vistaProducto(h.slice(4));
   } else {
@@ -375,8 +417,8 @@ render._rewire = function () {
   };
   const sel = $("#sort");
   if (sel) sel.onchange = () => {
-    const slug = location.hash.slice(4);
-    $("#app").innerHTML = vistaCategoria(slug, sel.value);
+    const [slug, sub] = rutaCat();
+    $("#app").innerHTML = vistaCategoria(slug, sub, sel.value);
     render._rewire();
   };
 };
@@ -393,7 +435,7 @@ function autoCarrusel() {
     const paso = (el.querySelector(".mood")?.offsetWidth || 320) + 10;
     if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) el.scrollTo({ left: 0, behavior: "smooth" });
     else el.scrollBy({ left: paso, behavior: "smooth" });
-  }, 3800);
+  }, 2000);
 }
 
 // ---------- Eventos globales ----------

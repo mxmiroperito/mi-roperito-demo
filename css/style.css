@@ -86,19 +86,27 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* Mega menú */
 .mega-wrap { position: relative; }
+/* Una sola columna: con subcategorías de alturas distintas, una retícula de
+   dos columnas dejaba huecos grandes bajo las categorías cortas. */
 .mega {
   position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%);
-  width: 520px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, .15); padding: 16px; z-index: 60;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+  width: 300px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .15); padding: 12px; z-index: 60;
+  display: flex; flex-direction: column; gap: 2px;
 }
 .mega[hidden] { display: none; }
-.mega a {
+.mega__col { display: flex; flex-direction: column; }
+.mega__t {
   display: flex; align-items: center; justify-content: space-between;
-  font: 600 15px/1 var(--display); padding: 11px 12px; border-radius: 9px;
+  font: 600 16px/1 var(--display); padding: 10px 12px; border-radius: 9px;
 }
-.mega a:hover { background: var(--pink-soft); }
-.mega a span { color: var(--accent); font-size: 12px; }
+.mega__t:hover { background: var(--pink-soft); }
+.mega__t span { color: var(--accent); font-size: 12px; }
+.mega__s {
+  font: 400 13px/1 var(--body); color: var(--muted);
+  padding: 8px 12px 8px 20px; border-radius: 9px;
+}
+.mega__s:hover { background: var(--pink-soft); color: var(--accent); }
 .backdrop { position: fixed; inset: 0; z-index: 45; }
 .backdrop[hidden] { display: none; }
 
@@ -110,41 +118,41 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .icon-btn { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; position: relative; }
 .hd__mob-r { justify-self: end; display: flex; align-items: center; gap: 2px; }
 
-/* ---------- Hero ---------- */
-.hero { position: relative; height: clamp(420px, 62vw, 620px); overflow: hidden; }
-/* La foto es vertical (800x1207): el encuadre baja para que se vea la modelo
-   y no solo el pasto del fondo. */
-.hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 58%; }
+/* ---------- Hero ----------
+   La foto (banner.jpg) es panorámica (1161x360) y de fondo claro: la modelo
+   va a la derecha y el texto en tinta oscura sobre un velo claro a la izquierda. */
+.hero { position: relative; height: clamp(380px, 46vw, 560px); overflow: hidden; background: #D9D8D6; }
+.hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% center; }
 .hero::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(69, 53, 57, .3), rgba(69, 53, 57, .1) 45%, rgba(69, 53, 57, .5));
+  background: linear-gradient(90deg, rgba(251, 243, 239, .94) 0%, rgba(251, 243, 239, .78) 32%, rgba(251, 243, 239, .1) 62%, transparent 100%);
 }
 .hero__txt {
-  position: relative; z-index: 2; height: 100%; color: #fff;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; gap: 14px; padding: 0 24px;
+  position: relative; z-index: 2; height: 100%; color: var(--ink);
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  text-align: left; gap: 14px; padding: 0 clamp(24px, 6vw, 84px); max-width: var(--max); margin: 0 auto;
 }
-.hero__kick { font: 600 12px/1 var(--body); letter-spacing: .28em; text-transform: uppercase; opacity: .92; }
-.hero__ttl { font: 500 clamp(46px, 10vw, 104px)/.9 var(--body); letter-spacing: .02em; text-transform: uppercase; }
-.hero__sub { font: 400 16px/1.4 var(--body); opacity: .95; letter-spacing: .02em; }
+.hero__kick { font: 600 12px/1 var(--body); letter-spacing: .28em; text-transform: uppercase; color: var(--accent); }
+.hero__ttl { font: 500 clamp(44px, 8vw, 92px)/.9 var(--body); letter-spacing: .02em; text-transform: uppercase; }
+.hero__sub { font: 400 16px/1.4 var(--body); color: var(--muted); letter-spacing: .02em; max-width: 22ch; }
 .btn-out {
   margin-top: 4px; display: inline-flex; align-items: center; gap: 9px;
-  border: 1.6px solid #fff; color: #fff; font: 600 12px/1 var(--body);
+  border: 1.6px solid var(--ink); color: var(--ink); font: 600 12px/1 var(--body);
   padding: 15px 30px; border-radius: 6px; letter-spacing: .14em; text-transform: uppercase;
   transition: background .2s, color .2s;
 }
-.btn-out:hover { background: #fff; color: var(--ink); }
+.btn-out:hover { background: var(--ink); color: #fff; }
 
 /* ---------- Categorías circulares ----------
-   Varias visibles a la vez: fila completa en desktop,
-   y en móvil 4.5 círculos a la vista (no 2). */
-.cats { padding: 38px 0 26px; }
-.cats h2 { text-align: center; margin-bottom: 24px; font: 600 clamp(26px, 5vw, 38px)/1 var(--display); }
+   Las 5 categorías caben de una vez, tanto en escritorio como en móvil:
+   los círculos crecen para llenar el ancho, sin espacio muerto a los lados. */
+.cats { padding: 38px 0 30px; }
+.cats h2 { text-align: center; margin-bottom: 26px; font: 600 clamp(26px, 5vw, 38px)/1 var(--display); }
 .cats__row {
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
-  gap: 18px; padding: 4px 24px 10px; max-width: var(--max); margin: 0 auto;
+  gap: 26px; padding: 4px 24px 10px; max-width: var(--max); margin: 0 auto;
 }
-.cat { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.cat { display: flex; flex-direction: column; align-items: center; }
 .cat__c {
   width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; position: relative;
   background: var(--pink-soft); transition: transform .25s;
@@ -156,18 +164,21 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: linear-gradient(180deg, rgba(69, 53, 57, .1) 40%, rgba(69, 53, 57, .62));
 }
 .cat__c b {
-  position: absolute; left: 0; right: 0; bottom: 15%; z-index: 2;
-  font: 700 clamp(9.5px, .95vw, 14px)/1.1 var(--body); color: #fff; text-transform: uppercase;
-  letter-spacing: .02em; text-align: center; padding: 0 6px;
-  text-shadow: 0 1px 8px rgba(60, 25, 40, .6);
+  position: absolute; left: 0; right: 0; bottom: 14%; z-index: 2;
+  font: 700 clamp(8.5px, 1.35vw, 20px)/1.1 var(--body); color: #fff; text-transform: uppercase;
+  letter-spacing: .02em; text-align: center; padding: 0 4px;
+  text-shadow: 0 1px 10px rgba(60, 25, 40, .65);
 }
-.cat__d { font: 500 12px/1 var(--body); color: var(--muted); }
 
 /* ---------- Banner colección ---------- */
 .band {
   position: relative; display: block; width: 100%; overflow: hidden;
-  height: clamp(230px, 30vw, 350px); margin-top: 26px;
-  background: linear-gradient(105deg, var(--pink), var(--pink-soft) 48%, var(--beige));
+  height: clamp(230px, 30vw, 350px); margin-top: 26px; background: #D9D8D6;
+}
+.band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 78% center; }
+.band::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(252, 231, 238, .95) 0%, rgba(252, 231, 238, .8) 34%, rgba(252, 231, 238, .1) 64%, transparent 100%);
 }
 .band__in {
   position: relative; z-index: 2; max-width: var(--max); margin: 0 auto; height: 100%;
@@ -337,6 +348,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .pnl__bd a:hover, .drw-link:hover { background: var(--pink-soft); }
 .drw-link span { color: var(--accent); }
+.drw-sub {
+  display: block; padding: 10px 12px 10px 26px !important;
+  font: 400 14px/1 var(--body) !important; color: var(--muted); border-radius: 10px;
+}
 .pnl__ft { padding: 16px 20px; border-top: 1px solid var(--line); background: var(--pink-soft); }
 .pnl__ft p:first-child { font: 600 13px/1.4 var(--body); }
 .pnl__ft p:last-child { font: 400 12px/1.4 var(--body); color: var(--muted); margin-top: 4px; }
@@ -405,6 +420,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .empty { padding: 60px 24px; text-align: center; color: var(--muted); font: 400 14px/1.6 var(--body); }
 
+/* Filtros de subcategoría */
+.subs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+.subs__c {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  padding: 9px 16px; font: 500 12.5px/1 var(--body); transition: .15s; white-space: nowrap;
+}
+.subs__c:hover { border-color: var(--accent); color: var(--accent); }
+.subs__c.is-on { background: var(--ink); border-color: var(--ink); color: #fff; }
+
 /* ---------- WhatsApp flotante ---------- */
 .wa {
   position: fixed; right: 18px; bottom: 18px; z-index: 65;
@@ -440,16 +464,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .pdp__g { grid-template-columns: 1fr; gap: 24px; }
   .pdp__img { max-width: 460px; }
 
-  /* Categorías: varias a la vista, con scroll suave. 4.5 círculos visibles. */
-  .cats__row {
-    grid-auto-flow: unset; grid-auto-columns: unset;
-    display: flex; gap: 12px; overflow-x: auto; padding: 4px 14px 10px;
-    scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
-  }
-  .cats__row::-webkit-scrollbar { display: none; }
-  .cats__row { scrollbar-width: none; }
-  .cat { flex: none; width: calc((100vw - 28px - 4 * 12px) / 4.5); scroll-snap-align: start; }
+  /* Categorías: las 5 caben de una vez, sin scroll. */
+  .cats { padding: 28px 0 14px; }
+  .cats__row { gap: 10px; padding: 4px 14px 4px; }
   .cats h2 { margin-bottom: 18px; }
+  .band { margin-top: 14px; }
 
   .band__in { padding: 0 24px; }
   .ft__g { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 24px; }
@@ -498,10 +517,21 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .mood { width: 78vw; height: 380px; }
   .band { height: clamp(200px, 46vw, 260px); }
   .band__in { padding: 0 18px; }
-  .hero { height: clamp(380px, 88vw, 520px); }
-  .cat { width: calc((100vw - 28px - 4 * 10px) / 4.4); }
-  .cats__row { gap: 10px; }
-  .cat__d { font-size: 11px; }
+  .hero { height: clamp(360px, 90vw, 460px); }
+  /* Foto panorámica en pantalla vertical: se encuadra sobre la modelo y el
+     velo pasa a ser vertical, casi sólido abajo, para que el texto se lea
+     sobre el fondo y no sobre la prenda. */
+  .hero img { object-position: 66% center; }
+  .hero::after {
+    background: linear-gradient(180deg, rgba(251, 243, 239, .1) 0%, rgba(251, 243, 239, .45) 38%, rgba(251, 243, 239, .96) 66%, var(--bg) 84%);
+  }
+  .hero__txt { justify-content: flex-end; padding-bottom: 26px; }
+  .hero__sub { max-width: none; }
+  .band img { object-position: 72% center; }
+  .band::after {
+    background: linear-gradient(90deg, rgba(252, 231, 238, .96) 0%, rgba(252, 231, 238, .85) 46%, rgba(252, 231, 238, .25) 100%);
+  }
+  .cats__row { gap: 7px; padding: 4px 12px 10px; }
 }
 
 /* En pantallas táctiles no hay hover: nombre y precio siempre visibles. */
