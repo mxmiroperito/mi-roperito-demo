@@ -99,15 +99,19 @@ function vistaInicio() {
   });
   piezas.push(tileEditorial(EDITORIALES[2]));
 
-  const moods = MOODS.map(m => `
-    <a class="mood" href="${m.href}">
-      <img src="${IMG(m.foto)}" alt="${esc(m.titulo)}" loading="lazy">
+  const mood = (m, copia) => `
+    <a class="mood" href="${m.href}"${copia ? ' aria-hidden="true" tabindex="-1"' : ""}>
+      <img src="${IMG(m.foto)}" alt="${copia ? "" : esc(m.titulo)}" loading="lazy">
       <div class="mood__t">
         <h3>${esc(m.titulo)}</h3>
         <p>${esc(m.desc)}</p>
         <span>Comprar ahora</span>
       </div>
-    </a>`).join("");
+    </a>`;
+  // Se pinta dos veces: la segunda copia permite saltar de vuelta al inicio
+  // sin que se note, en vez de rebobinar cruzando todos los productos.
+  const moods = MOODS.map(m => mood(m, false)).join("") +
+                MOODS.map(m => mood(m, true)).join("");
 
   return `
   <section class="hero">
@@ -423,19 +427,41 @@ render._rewire = function () {
   };
 };
 
-// Carrusel de moods: avanza solo, se detiene si el usuario lo toca.
+// Carrusel de moods: avanza solo una pieza a la vez.
+// Se detiene si el usuario lo toca o pasa el mouse por encima.
 function autoCarrusel() {
   const el = $("#moods");
   if (!el) return;
   clearInterval(autoCarrusel._i);
-  let pausa = false;
-  el.addEventListener("pointerdown", () => { pausa = true; }, { once: true });
+
+  let i = 0, pausa = false;
+  const parar = () => { pausa = true; };
+  el.addEventListener("pointerdown", parar);
+  el.addEventListener("mouseenter", parar);
+  el.addEventListener("mouseleave", () => { pausa = false; });
+
   autoCarrusel._i = setInterval(() => {
     if (pausa || !document.body.contains(el)) return;
-    const paso = (el.querySelector(".mood")?.offsetWidth || 320) + 10;
-    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) el.scrollTo({ left: 0, behavior: "smooth" });
-    else el.scrollBy({ left: paso, behavior: "smooth" });
-  }, 2000);
+    const cards = el.querySelectorAll(".mood");
+    const N = MOODS.length;
+    if (cards.length <= N) return;
+
+    // El destino se toma de la posición real de cada tarjeta, no de un ancho
+    // calculado: así coincide exacto con el punto de imán del scroll-snap.
+    // Si no coincide, el navegador corrige al siguiente y salta de dos en dos.
+    const vuelta = cards[N].offsetLeft - cards[0].offsetLeft;
+
+    // Al entrar en la segunda copia, retrocedemos una vuelta sin animación.
+    // Las copias son idénticas, así que el salto no se ve y el giro es infinito.
+    if (el.scrollLeft >= cards[N].offsetLeft - 2) {
+      el.scrollLeft -= vuelta;
+      i -= N;
+    }
+    i++;
+    // scrollTo absoluto, no scrollBy: los pasos relativos se acumulaban si la
+    // animación anterior seguía corriendo.
+    el.scrollTo({ left: cards[i].offsetLeft, behavior: "smooth" });
+  }, 2600);
 }
 
 // ---------- Eventos globales ----------

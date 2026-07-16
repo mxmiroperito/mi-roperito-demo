@@ -25,6 +25,11 @@ Es una segunda opción para que la clienta elija. **No reemplaza al sitio actual
 - **Banner y hero** usan `img/banner.jpg`. Es una foto panorámica (1161x360) de fondo claro,
   así que el texto va en tinta oscura sobre un velo claro: horizontal en escritorio
   (modelo a la derecha) y vertical en móvil (modelo arriba, texto abajo).
+- **La foto del hero/banner nunca se amplía.** Se muestra a tamaño original (alto 360 =
+  su alto natural) y los lados se rellenan con `--relleno-foto`, un degradado copiado
+  del borde derecho de la foto. Estirarla a pantalla completa la ampliaba 1.56x y se veía
+  borrosa. **Si cambias `banner.jpg`, hay que volver a muestrear su borde** y ajustar
+  `--relleno-foto` en `css/style.css`, o se verá dónde termina la foto.
 
 ## Datos
 
