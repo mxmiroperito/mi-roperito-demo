@@ -7,23 +7,26 @@
 // Categorías principales: las 4 reales de la tienda + "Novedades".
 // `corto` es la etiqueta dentro del círculo (los nombres largos no caben en móvil).
 // `name` se usa en menús, listados y migas de pan.
+// `foto` de cada círculo: fotos de producto con fondo blanco (van con
+// object-fit:contain sobre el círculo, así el producto se ve completo).
+// Deportiva no tiene foto de catálogo propia: usa el short de mezclilla.
 const CATS = [
-  { slug: "ropa",      name: "Ropa",      corto: "Ropa",      foto: "blusa-satin.jpg" },
-  { slug: "deportiva", name: "Deportiva", corto: "Deportiva", foto: "conjunto-deportivo.jpg" },
-  { slug: "playa",     name: "Playa",     corto: "Playa",     foto: "bikini-tropical.jpg" },
-  { slug: "lenceria",  name: "Lencería",  corto: "Lencería",  foto: "pijama-rayitas.jpg" },
-  { slug: "novedades", name: "Novedades", corto: "Novedades", foto: "vestido-floral.jpg" },
+  { slug: "ropa",      name: "Ropa",      corto: "Ropa",      foto: "top-drapeado-negro.jpg" },
+  { slug: "deportiva", name: "Deportiva", corto: "Deportiva", foto: "short-mezclilla.jpg" },
+  { slug: "playa",     name: "Playa",     corto: "Playa",     foto: "bikini-negro.jpg" },
+  { slug: "lenceria",  name: "Lencería",  corto: "Lencería",  foto: "conjunto-encaje-lila.jpg" },
+  { slug: "novedades", name: "Novedades", corto: "Novedades", foto: "vestido-rojo-olanes.jpg" },
 ];
 
 // Subcategorías por categoría. Hoy solo "Ropa" se divide;
 // las demás entran directo a su listado.
 const SUBS = {
   ropa: [
-    { slug: "blusas",     name: "Blusas y Tops" },
-    { slug: "pantalones", name: "Pantalones y Jeans" },
-    { slug: "vestidos",   name: "Vestidos" },
-    { slug: "shorts",     name: "Shorts" },
-    { slug: "faldas",     name: "Faldas" },
+    { slug: "blusas",     name: "Blusas y Tops",      foto: "top-drapeado-negro.jpg" },
+    { slug: "pantalones", name: "Pantalones y Jeans", foto: "jeans-wide-azul.jpg" },
+    { slug: "vestidos",   name: "Vestidos",           foto: "vestido-rojo-olanes.jpg" },
+    { slug: "shorts",     name: "Shorts",             foto: "short-mezclilla.jpg" },
+    { slug: "faldas",     name: "Faldas",             foto: "falda-satin-negra.jpg" },
   ],
 };
 
@@ -82,9 +85,10 @@ const PRODUCTS = [
 // se quedan únicamente en el inicio. Temporal, ver el bloque en PRODUCTS.
 const enCatalogo = (p) => p.zona === "catalogo" || p.gift;
 
-// "Novedades" no es una categoría del catálogo: agrupa lo marcado como nuevo.
+// "Novedades": por ahora SOLO la gift card (temporal, hasta que la clienta
+// elija tienda y se defina el catálogo real).
 function productosDe(slug, sub) {
-  if (slug === "novedades") return PRODUCTS.filter(p => enCatalogo(p) && p.nuevo);
+  if (slug === "novedades") return PRODUCTS.filter(p => p.gift);
   return PRODUCTS.filter(p => enCatalogo(p) && p.cat === slug && (!sub || p.sub === sub));
 }
 

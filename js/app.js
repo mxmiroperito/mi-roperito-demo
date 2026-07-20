@@ -201,10 +201,10 @@ function vistaCategoria(slug, sub = "", orden = "destacados") {
   // LANDING DE SUBCATEGORÍAS: si la categoría tiene subcategorías y aún no se
   // eligió una, mostramos un mosaico (imagen + título) que lleva a cada una.
   if (subs.length && !sub) {
-    // Cada subcategoría tiene su propia ilustración de marca (img/subcats/<slug>.svg)
+    // Cada subcategoría se muestra con una foto de producto real (fondo blanco).
     const tiles = subs.map(s => `
         <a class="subcat-tile" href="#/c/${slug}/${s.slug}">
-          <img src="img/subcats/${s.slug}.svg" alt="${esc(s.name)}" loading="lazy">
+          <img src="${IMG(s.foto)}" alt="${esc(s.name)}" loading="lazy">
           <div class="subcat-tile__t"><h3>${esc(s.name)}</h3><span>Ver productos →</span></div>
         </a>`).join("");
     return `
@@ -592,6 +592,11 @@ function render() {
     app.innerHTML = vistaInicio();
     autoCarrusel();
   }
+
+  // El footer completo solo va en el inicio; en el resto de vistas estorba.
+  const esHome = h === "#/" || h === "#" || h === "";
+  const ft = document.querySelector(".ft");
+  if (ft) ft.hidden = !esHome;
 
   render._rewire();
   window.scrollTo(0, 0);
