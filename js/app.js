@@ -667,40 +667,61 @@ render._rewire = function () {
   if (accLogout) accLogout.onclick = salirCliente;
 };
 
-// Carrusel de moods: MARQUESINA CONTINUA (avanza solo y fluido, como el rail
-// del sitio oficial). El contenido está duplicado (MOODS x2); al llegar al
-// final de la primera copia retrocedemos una vuelta sin que se note → giro
-// infinito. Se pausa al pasar el mouse o al tocar.
+// Carrusel de moods: MARQUESINA CONTINUA con el MISMO patrón que el rail del
+// sitio oficial (effects.js). Clave para que se pueda deslizar/detener sin que
+// pelee: cualquier pointerdown/touch/wheel PAUSA el auto-avance unos segundos y
+// suelta el control (durante la pausa el rAF no toca scrollLeft, así el scroll
+// nativo y el arrastre mandan). En PC además se puede ARRASTRAR con el mouse.
 function autoCarrusel() {
   const el = $("#moods");
   if (!el) return;
   cancelAnimationFrame(autoCarrusel._raf);
 
   const N = MOODS.length;
-  let pausa = false;
-  el.onpointerenter = () => { pausa = true; };
-  el.onpointerleave = () => { pausa = false; };
-  el.ontouchstart = () => { pausa = true; };
-  el.ontouchend = () => { clearTimeout(autoCarrusel._t); autoCarrusel._t = setTimeout(() => { pausa = false; }, 1500); };
+  const VEL = 42;                 // px por segundo
+  let pausedUntil = 0, x = null;  // x lleva decimales (scrollLeft se redondea)
+  const pause = (ms) => { pausedUntil = Date.now() + ms; x = null; };
+  ["pointerdown", "touchstart", "wheel"].forEach(ev =>
+    el.addEventListener(ev, () => pause(4000), { passive: true }));
 
-  let pos = el.scrollLeft, last = performance.now();
-  const VEL = 42; // px por segundo
-  const paso = (now) => {
-    const dt = Math.min(now - last, 60); last = now;
-    if (!pausa && document.body.contains(el)) {
-      const cards = el.querySelectorAll(".mood");
-      if (cards.length > N) {
-        const vuelta = cards[N].offsetLeft - cards[0].offsetLeft;
-        pos += VEL * dt / 1000;
-        if (vuelta > 0 && pos >= vuelta) pos -= vuelta;
-        el.scrollLeft = pos;
-      }
-    } else {
-      pos = el.scrollLeft; // el usuario pudo mover a mano mientras estaba en pausa
-    }
-    autoCarrusel._raf = requestAnimationFrame(paso);
+  // Arrastre con el mouse en PC (el riel no tiene barra visible)
+  let drag = false, sx = 0, sScroll = 0, movedFar = false;
+  el.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "mouse") return;
+    drag = true; movedFar = false; sx = e.clientX; sScroll = el.scrollLeft;
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const dx = e.clientX - sx;
+    if (Math.abs(dx) > 8) movedFar = true;
+    pause(4000);
+    el.scrollLeft = sScroll - dx;
+  });
+  ["pointerup", "pointercancel"].forEach(ev =>
+    el.addEventListener(ev, () => { drag = false; }));
+  // si hubo arrastre, el click al soltar NO debe abrir el enlace
+  el.addEventListener("click", e => {
+    if (movedFar) { e.stopPropagation(); e.preventDefault(); movedFar = false; }
+  }, true);
+
+  let prev = performance.now();
+  const tick = (now) => {
+    autoCarrusel._raf = requestAnimationFrame(tick);
+    const dt = Math.min((now - prev) / 1000, .1); prev = now;
+    if (Date.now() < pausedUntil || document.hidden || !document.body.contains(el)) return;
+    const cards = el.querySelectorAll(".mood");
+    if (cards.length <= N) return;
+    const loop = cards[N].offsetLeft - cards[0].offsetLeft;
+    if (!loop) return;
+    if (el.matches(":hover")) { x = null; return; } // mouse encima: quieto
+    if (x === null) x = el.scrollLeft;
+    x += VEL * dt;
+    if (x >= loop) x -= loop;
+    if (x < 0) x += loop;
+    el.scrollLeft = x;
   };
-  autoCarrusel._raf = requestAnimationFrame(paso);
+  autoCarrusel._raf = requestAnimationFrame(tick);
 }
 
 // ---------- Eventos globales ----------

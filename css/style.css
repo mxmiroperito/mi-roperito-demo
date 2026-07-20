@@ -295,8 +295,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; gap: 10px; overflow-x: auto; padding: 4px 24px;
   /* Sin scroll-snap: la marquesina continua (autoCarrusel) mueve scrollLeft
      cada frame; el imán del snap la frenaba y no avanzaba. */
-  scroll-snap-type: none; scrollbar-width: none;
+  scroll-snap-type: none; scrollbar-width: none; cursor: grab;
 }
+.moods__row:active { cursor: grabbing; }
 .moods__row::-webkit-scrollbar { display: none; }
 .mood {
   position: relative; flex: none; width: clamp(260px, 30vw, 380px); height: 440px;
@@ -641,7 +642,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---------- WhatsApp flotante ---------- */
 .wa {
-  position: fixed; right: 18px; bottom: 84px; z-index: 65;
+  position: fixed; right: 18px; bottom: 18px; z-index: 65;
   width: 54px; height: 54px; border-radius: 999px; background: #25D366; color: #fff;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 8px 24px rgba(37, 211, 102, .4); transition: transform .2s;
@@ -650,26 +651,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---------- Toast ---------- */
 .toast {
-  position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%) translateY(20px); z-index: 90;
+  position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px); z-index: 90;
   background: var(--ink); color: #fff; padding: 13px 22px; border-radius: 999px;
   font: 500 13px/1 var(--body); opacity: 0; pointer-events: none; transition: .25s;
 }
 .toast.is-on { opacity: 1; transform: translateX(-50%); }
 
-/* ---------- Nav inferior (SIEMPRE visible, en todo el sitio) ---------- */
-.bnav {
-  display: flex; justify-content: space-around; align-items: stretch;
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
-  background: var(--surface); border-top: 1px solid var(--line);
-  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
-  box-shadow: 0 -2px 14px rgba(0, 0, 0, .06);
-}
-.bnav button, .bnav a {
-  flex: 1 1 0; max-width: 160px; display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 6px; font: 600 9.5px/1 var(--body); position: relative; color: inherit;
-}
-.bnav .is-on { color: var(--accent); }
-.bnav-pad { height: 66px; }
+/* ---------- Nav inferior (solo móvil) ---------- */
+.bnav { display: none; }
 
 /* ============================================================
    RESPONSIVE
@@ -698,7 +687,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .band { margin-top: 14px; }
 
   .band__in { padding: 0 24px; }
-  .ft__g { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 24px; }
+  /* Padding inferior extra para que el último acordeón ("¿Dónde estamos?")
+     quede por encima de la burbuja de WhatsApp y su chevron no quede tapado. */
+  .ft__g { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 78px; }
 
   /* Footer acordeón (como la referencia móvil) */
   .ft__col { border-bottom: 1px solid rgba(255, 255, 255, .14); }
@@ -714,12 +705,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .ft__col.is-open .ft__map { max-height: 120px; margin-top: 12px; margin-bottom: 16px; }
   .ft__brand { padding-bottom: 22px; }
 
-  /* En móvil las 4 pestañas llenan todo el ancho */
-  .bnav button, .bnav a { max-width: none; }
+  .bnav {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    background: var(--surface); border-top: 1px solid var(--line);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    box-shadow: 0 -2px 14px rgba(0, 0, 0, .05);
+  }
+  .bnav button, .bnav a {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px; font: 600 9.5px/1 var(--body); position: relative;
+  }
+  .bnav .is-on { color: var(--accent); }
+  .bnav-pad { height: 66px; }
   .wa { bottom: 80px; right: 14px; width: 48px; height: 48px; }
-  .toast { bottom: 80px; }
-  /* El chevron del acordeón del footer no debe quedar bajo la burbuja de WhatsApp */
-  .ft__acc-t { padding-right: 66px; }
+  .toast { bottom: 84px; }
 }
 
 @media (max-width: 640px) {
