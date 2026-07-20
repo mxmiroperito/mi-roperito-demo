@@ -8,7 +8,7 @@
 :root {
   --bg: #FBF3EF;
   --surface: #FFFFFF;
-  --header: #F9DCE6;   /* rosa pastel del encabezado */
+  --header: var(--ink);   /* mismo color que el fondo del footer */
   --pink: #F7CAD8;
   --pink-soft: #FCE7EE;
   --accent: #CE6C88;
@@ -63,7 +63,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ---------- Header ---------- */
 .hd {
   position: sticky; top: 0; z-index: 50;
-  background: var(--header); border-bottom: 1px solid var(--line);
+  background: var(--header); border-bottom: 1px solid rgba(255, 255, 255, .12);
+  color: #fff;   /* header oscuro: texto e iconos (currentColor) en claro */
 }
 .hd__in {
   display: flex; align-items: center; justify-content: space-between;
@@ -72,19 +73,19 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .logo { line-height: 1; flex: none; }
 .logo b { display: block; font: 600 30px/.86 var(--display); letter-spacing: .01em; white-space: nowrap; }
 .logo b em { font-style: italic; color: var(--accent); }
-.logo i { display: block; font: 400 13px/1 'Sacramento', cursive; color: var(--muted); font-style: normal; margin-top: 1px; }
+.logo i { display: block; font: 400 13px/1 'Sacramento', cursive; color: rgba(255, 255, 255, .72); font-style: normal; margin-top: 1px; }
 
 .nav { display: flex; align-items: center; gap: 26px; }
 .nav a, .nav button {
   font: 600 13px/1 var(--body); letter-spacing: .06em; text-transform: uppercase;
   padding: 6px 0; border-bottom: 1.5px solid transparent; transition: border-color .2s, color .2s;
 }
-.nav a:hover, .nav button:hover { border-bottom-color: var(--accent); color: var(--accent); }
-.nav .is-sale { color: var(--accent); }
+.nav a:hover, .nav button:hover { border-bottom-color: var(--accent-2); color: var(--accent-2); }
+.nav .is-sale { color: var(--accent-2); }
 
 .hd__acts { display: flex; align-items: center; gap: 16px; flex: none; }
 .hd__acts button { display: flex; align-items: center; gap: 7px; font: 600 12px/1 var(--body); letter-spacing: .06em; }
-.hd__acts button:hover { color: var(--accent); }
+.hd__acts button:hover { color: var(--accent-2); }
 .pill {
   position: absolute; top: -7px; right: -8px; min-width: 17px; height: 17px; padding: 0 4px;
   background: var(--accent); color: #fff; border-radius: 999px;
