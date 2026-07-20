@@ -313,17 +313,19 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .mood__t span { font: 600 11px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; border-bottom: 1.5px solid #fff; padding-bottom: 3px; }
 
 /* ---------- Info / beneficios ---------- */
-.info { padding: 26px 24px 30px; max-width: 1080px; margin: 0 auto; }
-.info__g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.info { padding: 24px 20px 26px; max-width: 1040px; margin: 0 auto; }
+/* grid-auto-rows:1fr = todas las filas miden igual (la de abajo ya no queda
+   más alta que la de arriba aunque un texto sea más largo) */
+.info__g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; grid-auto-rows: 1fr; }
 .info__c {
   background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
-  padding: 14px 12px; text-align: center;
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-  gap: 5px; min-height: 116px;
+  padding: 12px 10px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
 }
-.info__c svg { width: 21px; height: 21px; }
-.info__c h3 { font: 600 11.5px/1.2 var(--body); letter-spacing: .04em; text-transform: uppercase; }
-.info__c p { font: 400 10.5px/1.45 var(--body); color: var(--muted); margin: 0; }
+.info__c svg { width: 20px; height: 20px; }
+.info__c h3 { font: 600 11px/1.2 var(--body); letter-spacing: .04em; text-transform: uppercase; }
+.info__c p { font: 400 10px/1.4 var(--body); color: var(--muted); margin: 0; }
 .info__c--hi {
   background: linear-gradient(135deg, var(--accent-2), var(--accent));
   border-color: transparent; color: #fff;
