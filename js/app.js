@@ -167,6 +167,33 @@ function vistaInicio() {
 function vistaCategoria(slug, sub = "", orden = "destacados") {
   const cat = CATS.find(c => c.slug === slug);
   if (!cat) return vistaInicio();
+  const subs = SUBS[slug] || [];
+
+  // LANDING DE SUBCATEGORÍAS: si la categoría tiene subcategorías y aún no se
+  // eligió una, mostramos un mosaico (imagen + título) que lleva a cada una.
+  if (subs.length && !sub) {
+    const tiles = subs.map(s => {
+      const p = productosDe(slug, s.slug)[0];
+      const foto = p ? `<img src="${IMG(p.foto)}" alt="${esc(s.name)}" loading="lazy">` : `<div class="subcat-tile__ph"></div>`;
+      return `
+        <a class="subcat-tile" href="#/c/${slug}/${s.slug}">
+          ${foto}
+          <div class="subcat-tile__t"><h3>${esc(s.name)}</h3><span>Ver productos →</span></div>
+        </a>`;
+    }).join("");
+    return `
+    <div class="cat-hd">
+      <div class="crumbs"><a href="#/">Inicio</a> / <span style="color:var(--ink)">${esc(cat.name)}</span></div>
+      <div class="cat-hd__r">
+        <div>
+          <span class="sec-hd__kick">Colección</span>
+          <h1>${esc(cat.name)}</h1>
+          <p class="cat-hd__n">Elige una categoría</p>
+        </div>
+      </div>
+    </div>
+    <div class="subcat-grid">${tiles}</div>`;
+  }
 
   let lista = [...productosDe(slug, sub)];
   const pr = p => p.promo || p.price;
@@ -177,14 +204,6 @@ function vistaCategoria(slug, sub = "", orden = "destacados") {
   const cuerpo = lista.length
     ? `<div class="grid">${lista.map(tile).join("")}</div>`
     : `<p class="empty">Muy pronto tendremos piezas nuevas en esta categoría.</p>`;
-
-  // Filtros de subcategoría (solo donde existen)
-  const subs = SUBS[slug] || [];
-  const chips = subs.length ? `
-    <div class="subs">
-      <a class="subs__c${!sub ? " is-on" : ""}" href="#/c/${slug}">Todo</a>
-      ${subs.map(s => `<a class="subs__c${sub === s.slug ? " is-on" : ""}" href="#/c/${slug}/${s.slug}">${esc(s.name)}</a>`).join("")}
-    </div>` : "";
 
   const titulo = sub ? nombreSub(slug, sub) : cat.name;
 
@@ -211,10 +230,8 @@ function vistaCategoria(slug, sub = "", orden = "destacados") {
         </select>
       </div>
     </div>
-    ${chips}
   </div>
-  ${cuerpo}
-  ${bloqueInfo()}`;
+  ${cuerpo}`;
 }
 
 function vistaProducto(id) {
@@ -282,8 +299,7 @@ function vistaProducto(id) {
       <div class="sec-hd"><div><span class="sec-hd__kick">También te va a gustar</span><h2>${esc(cat.name)}</h2></div>
       <a href="#/c/${p.cat}">Ver todo →</a></div>
       <div class="grid">${relacionados.map(tile).join("")}</div>
-    </section>` : ""}
-  ${bloqueInfo()}`;
+    </section>` : ""}`;
 }
 
 // ---------- Carrito ----------
@@ -630,6 +646,8 @@ function pintarResultados(q) {
     : `<p class="srch__hint">No encontramos nada con “${esc(q)}”. Prueba con otra palabra.</p>`;
 }
 $("#search-btn").onclick = abrirBusqueda;
+$("#search-btn-m").onclick = abrirBusqueda; // lupa del header móvil
+$("#bn-search")?.addEventListener("click", abrirBusqueda);
 $("#search-inp").oninput = e => pintarResultados(e.target.value);
 
 document.addEventListener("keydown", e => {
