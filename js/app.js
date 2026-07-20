@@ -172,15 +172,12 @@ function vistaCategoria(slug, sub = "", orden = "destacados") {
   // LANDING DE SUBCATEGORÍAS: si la categoría tiene subcategorías y aún no se
   // eligió una, mostramos un mosaico (imagen + título) que lleva a cada una.
   if (subs.length && !sub) {
-    const tiles = subs.map(s => {
-      const p = productosDe(slug, s.slug)[0];
-      const foto = p ? `<img src="${IMG(p.foto)}" alt="${esc(s.name)}" loading="lazy">` : `<div class="subcat-tile__ph"></div>`;
-      return `
+    // Cada subcategoría tiene su propia ilustración de marca (img/subcats/<slug>.svg)
+    const tiles = subs.map(s => `
         <a class="subcat-tile" href="#/c/${slug}/${s.slug}">
-          ${foto}
+          <img src="img/subcats/${s.slug}.svg" alt="${esc(s.name)}" loading="lazy">
           <div class="subcat-tile__t"><h3>${esc(s.name)}</h3><span>Ver productos →</span></div>
-        </a>`;
-    }).join("");
+        </a>`).join("");
     return `
     <div class="cat-hd">
       <div class="crumbs"><a href="#/">Inicio</a> / <span style="color:var(--ink)">${esc(cat.name)}</span></div>

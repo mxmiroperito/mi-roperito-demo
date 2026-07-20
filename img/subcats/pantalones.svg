@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c7b3e6"/>
+      <stop offset="1" stop-color="#8a6fb0"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#2b0f1e" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg)"/>
+  <circle cx="86" cy="130" r="78" fill="#ffffff" opacity="0.09"/>
+  <circle cx="528" cy="700" r="120" fill="#ffffff" opacity="0.08"/>
+  <circle cx="500" cy="150" r="34" fill="#ffffff" opacity="0.10"/>
+  <g filter="url(#sh)" transform="translate(300 415) scale(1.22) translate(-300 -415)">
+    <path d="M236 250 L364 250 L360 262 L358 586 L314 586 L303 372 L297 372 L286 586 L242 586 L240 262 Z" fill="#fdf6f8"/>
+    <path d="M236 288 L364 288" fill="none" stroke="rgba(158,30,86,.18)" stroke-width="7"/>
+      <path d="M300 300 L300 366" fill="none" stroke="rgba(158,30,86,.18)" stroke-width="6"/>
+  </g>
+</svg>
