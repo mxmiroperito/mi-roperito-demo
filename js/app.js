@@ -11,6 +11,10 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 let carrito = [];
+let metodoPago = "transferencia"; // "transferencia" | "whatsapp"
+
+// Datos de transferencia (DE EJEMPLO — coinciden con el sitio oficial)
+const BANK = { banco: "BBVA", titular: "Mi Roperito", clabe: "0121 8000 1234 5678 90", cuenta: "0123456789" };
 
 // ---------- Marquesina ----------
 const ANN = `♡  ENVÍO GRATIS desde ${money(TIENDA.envioGratis)}  ·  RECOGE EN TIENDA — Centro de Orizaba  ·  NUEVA TEMPORADA YA DISPONIBLE  ·  `;
@@ -372,6 +376,19 @@ function pintarCarrito() {
   const detalle = carrito.map(i =>
     `• ${lineName(i)} x${i.qty} — ${money(unit(i) * i.qty)}`).join("\n");
   const msg = encodeURIComponent(`¡Hola! Quiero pedir:\n${detalle}\n\nTotal: ${money(total)}`);
+  const msgT = encodeURIComponent(`¡Hola! Ya hice mi transferencia del pedido:\n${detalle}\n\nTotal: ${money(total)}\nAdjunto mi comprobante.`);
+
+  const acciones = metodoPago === "transferencia" ? `
+      <div class="pay-card">
+        <div class="pay-card__r"><span>Banco</span><b>${BANK.banco}</b></div>
+        <div class="pay-card__r"><span>Titular</span><b>${BANK.titular}</b></div>
+        <div class="pay-card__r"><span>CLABE</span><b>${BANK.clabe}</b></div>
+        <div class="pay-card__r"><span>Cuenta</span><b>${BANK.cuenta}</b></div>
+      </div>
+      <p class="pay-note">Haz tu transferencia y envíanos el comprobante por WhatsApp con tu número de pedido. También aceptamos depósito y efectivo en tienda.</p>
+      <a class="btn-fill" href="${TIENDA.wa}?text=${msgT}" target="_blank" rel="noopener">Enviar comprobante por WhatsApp</a>`
+    : `<p class="pay-note">Tu pedido se confirma por WhatsApp y ahí acordamos el pago.</p>
+      <a class="btn-fill" href="${TIENDA.wa}?text=${msg}" target="_blank" rel="noopener">Pedir por WhatsApp</a>`;
 
   body.innerHTML = `
     <div style="flex:1;overflow-y:auto;padding:12px 16px">${lineas}</div>
@@ -380,7 +397,11 @@ function pintarCarrito() {
       <div class="cart-tot__r"><span>Envío</span><span>${falta <= 0 ? "Gratis ✓" : "Se calcula al pagar"}</span></div>
       ${falta > 0 ? `<p style="font:400 11.5px/1.4 var(--body);color:var(--muted);margin-bottom:8px">Te faltan ${money(falta)} para el envío gratis.</p>` : ""}
       <div class="cart-tot__r cart-tot__r--b"><span>Total</span><span>${money(total)}</span></div>
-      <a class="btn-fill" href="${TIENDA.wa}?text=${msg}" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+      <div class="pay-tabs">
+        <button class="pay-tab ${metodoPago === "transferencia" ? "is-on" : ""}" data-pago="transferencia">Transferencia</button>
+        <button class="pay-tab ${metodoPago === "whatsapp" ? "is-on" : ""}" data-pago="whatsapp">WhatsApp</button>
+      </div>
+      ${acciones}
     </div>`;
 }
 
@@ -429,7 +450,7 @@ $("#ft-cats").innerHTML = [
   ["Novedades", "#/c/novedades"],
   ["Vestidos", "#/c/ropa/vestidos"],
   ["Blusas y Tops", "#/c/ropa/blusas"],
-  ["Jeans y Pantalones", "#/c/ropa/jeans"],
+  ["Pantalones y Jeans", "#/c/ropa/pantalones"],
   ["Deportiva", "#/c/deportiva"],
   ["Gift Card", "#/p/gift-card"],
 ].map(([n, h]) => `<li><a href="${h}">${esc(n)}</a></li>`).join("");
@@ -554,6 +575,9 @@ document.addEventListener("click", e => {
   const del = e.target.closest("[data-del]");
   if (del) { carrito = carrito.filter((_, idx) => idx !== Number(del.dataset.del)); pintarCarrito(); return; }
 
+  const pago = e.target.closest("[data-pago]");
+  if (pago) { metodoPago = pago.dataset.pago; pintarCarrito(); return; }
+
   const close = e.target.closest("[data-close]");
   if (close) { cerrar(close.dataset.close); return; }
 
@@ -578,14 +602,42 @@ $("#cart-btn-m").onclick = () => abrir("cart");
 $("#bn-cart").onclick = () => abrir("cart");
 $("#drw-btn").onclick = () => abrir("drw");
 $("#bn-cats").onclick = () => abrir("drw");
-$("#search-btn").onclick = () => flash("La búsqueda se conecta al catálogo real 🔍");
+// ---------- Buscador ----------
+function abrirBusqueda() {
+  abrir("search");
+  const inp = $("#search-inp");
+  inp.value = "";
+  pintarResultados("");
+  setTimeout(() => inp.focus(), 80);
+}
+function pintarResultados(q) {
+  const box = $("#search-res");
+  const t = q.trim().toLowerCase();
+  if (!t) { box.innerHTML = `<p class="srch__hint">Escribe para buscar entre ${PRODUCTS.length} productos.</p>`; return; }
+  const catName = slug => (CATS.find(c => c.slug === slug) || {}).name || "";
+  const res = PRODUCTS.filter(p =>
+    p.name.toLowerCase().includes(t) ||
+    (p.desc || "").toLowerCase().includes(t) ||
+    catName(p.cat).toLowerCase().includes(t) ||
+    nombreSub(p.cat, p.sub).toLowerCase().includes(t)
+  ).slice(0, 20);
+  box.innerHTML = res.length ? res.map(p => `
+    <a class="srch__i" href="#/p/${p.id}" data-close="search">
+      <img src="${IMG(p.foto)}" alt="">
+      <div class="srch__i-n">${esc(p.name)}<div class="srch__i-c">${esc(p.gift ? "Novedades" : catName(p.cat))}</div></div>
+      <span class="srch__i-p">${p.gift ? "Desde " : ""}${money(p.promo || p.price)}</span>
+    </a>`).join("")
+    : `<p class="srch__hint">No encontramos nada con “${esc(q)}”. Prueba con otra palabra.</p>`;
+}
+$("#search-btn").onclick = abrirBusqueda;
+$("#search-inp").oninput = e => pintarResultados(e.target.value);
 
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") { cerrar("drw"); cerrar("cart"); cerrarMega(); }
 });
 
 // Al navegar, cierra los paneles abiertos
-window.addEventListener("hashchange", () => { cerrar("drw"); cerrar("cart"); render(); });
+window.addEventListener("hashchange", () => { cerrar("drw"); cerrar("cart"); cerrar("search"); render(); });
 
 pintarCarrito();
 render();
