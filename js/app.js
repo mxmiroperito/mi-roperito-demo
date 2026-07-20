@@ -667,41 +667,40 @@ render._rewire = function () {
   if (accLogout) accLogout.onclick = salirCliente;
 };
 
-// Carrusel de moods: avanza solo una pieza a la vez.
-// Se detiene si el usuario lo toca o pasa el mouse por encima.
+// Carrusel de moods: MARQUESINA CONTINUA (avanza solo y fluido, como el rail
+// del sitio oficial). El contenido está duplicado (MOODS x2); al llegar al
+// final de la primera copia retrocedemos una vuelta sin que se note → giro
+// infinito. Se pausa al pasar el mouse o al tocar.
 function autoCarrusel() {
   const el = $("#moods");
   if (!el) return;
-  clearInterval(autoCarrusel._i);
+  cancelAnimationFrame(autoCarrusel._raf);
 
-  let i = 0, pausa = false;
-  const parar = () => { pausa = true; };
-  el.addEventListener("pointerdown", parar);
-  el.addEventListener("mouseenter", parar);
-  el.addEventListener("mouseleave", () => { pausa = false; });
+  const N = MOODS.length;
+  let pausa = false;
+  el.onpointerenter = () => { pausa = true; };
+  el.onpointerleave = () => { pausa = false; };
+  el.ontouchstart = () => { pausa = true; };
+  el.ontouchend = () => { clearTimeout(autoCarrusel._t); autoCarrusel._t = setTimeout(() => { pausa = false; }, 1500); };
 
-  autoCarrusel._i = setInterval(() => {
-    if (pausa || !document.body.contains(el)) return;
-    const cards = el.querySelectorAll(".mood");
-    const N = MOODS.length;
-    if (cards.length <= N) return;
-
-    // El destino se toma de la posición real de cada tarjeta, no de un ancho
-    // calculado: así coincide exacto con el punto de imán del scroll-snap.
-    // Si no coincide, el navegador corrige al siguiente y salta de dos en dos.
-    const vuelta = cards[N].offsetLeft - cards[0].offsetLeft;
-
-    // Al entrar en la segunda copia, retrocedemos una vuelta sin animación.
-    // Las copias son idénticas, así que el salto no se ve y el giro es infinito.
-    if (el.scrollLeft >= cards[N].offsetLeft - 2) {
-      el.scrollLeft -= vuelta;
-      i -= N;
+  let pos = el.scrollLeft, last = performance.now();
+  const VEL = 42; // px por segundo
+  const paso = (now) => {
+    const dt = Math.min(now - last, 60); last = now;
+    if (!pausa && document.body.contains(el)) {
+      const cards = el.querySelectorAll(".mood");
+      if (cards.length > N) {
+        const vuelta = cards[N].offsetLeft - cards[0].offsetLeft;
+        pos += VEL * dt / 1000;
+        if (vuelta > 0 && pos >= vuelta) pos -= vuelta;
+        el.scrollLeft = pos;
+      }
+    } else {
+      pos = el.scrollLeft; // el usuario pudo mover a mano mientras estaba en pausa
     }
-    i++;
-    // scrollTo absoluto, no scrollBy: los pasos relativos se acumulaban si la
-    // animación anterior seguía corriendo.
-    el.scrollTo({ left: cards[i].offsetLeft, behavior: "smooth" });
-  }, 2600);
+    autoCarrusel._raf = requestAnimationFrame(paso);
+  };
+  autoCarrusel._raf = requestAnimationFrame(paso);
 }
 
 // ---------- Eventos globales ----------
