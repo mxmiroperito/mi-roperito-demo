@@ -16,6 +16,31 @@ let metodoPago = "transferencia"; // "transferencia" | "whatsapp"
 // Datos de transferencia (DE EJEMPLO — coinciden con el sitio oficial)
 const BANK = { banco: "BBVA", titular: "Mi Roperito", clabe: "0121 8000 1234 5678 90", cuenta: "0123456789" };
 
+// ---------- Sesión de clienta (MAQUETA) ----------
+// Este demo no tiene backend: la "sesión" es solo un objeto guardado en el
+// navegador para que el panel se sienta real. No se envía nada a ningún lado.
+let cliente = null;
+try { cliente = JSON.parse(localStorage.getItem("mr_cliente") || "null"); } catch (e) { cliente = null; }
+function guardarCliente(c) { cliente = c; try { localStorage.setItem("mr_cliente", JSON.stringify(c)); } catch (e) {} }
+function salirCliente() {
+  cliente = null;
+  try { localStorage.removeItem("mr_cliente"); } catch (e) {}
+  location.hash = "#/cuenta"; render();
+}
+
+// Pedidos de ejemplo para llenar el panel
+const PEDIDOS_DEMO = [
+  { id: "MR-1042", fecha: "12 jul 2026", estado: "Listo para recoger", items: ["Vestido Floral Primavera · CH", "Blusa Satín Rosé · M"], total: 748 },
+  { id: "MR-1031", fecha: "3 jul 2026",  estado: "Enviado",            items: ["Conjunto Deportivo Rosa · G"],                             total: 529 },
+  { id: "MR-1017", fecha: "21 jun 2026", estado: "Entregado",          items: ["Gift Card · $500"],                                        total: 500 },
+];
+function estadoClase(e) {
+  e = e.toLowerCase();
+  if (e.includes("entreg")) return "ok";
+  if (e.includes("enviado") || e.includes("listo")) return "go";
+  return "wait";
+}
+
 // ---------- Marquesina ----------
 const ANN = `♡  ENVÍO GRATIS desde ${money(TIENDA.envioGratis)}  ·  RECOGE EN TIENDA — Centro de Orizaba  ·  NUEVA TEMPORADA YA DISPONIBLE  ·  `;
 $("#ann-a").textContent = ANN.repeat(2);
@@ -123,7 +148,8 @@ function vistaInicio() {
 
   return `
   <section class="hero">
-    <img src="img/banner.jpg" alt="Nueva temporada Mi Roperito">
+    <img class="hero__img hero__img--a" src="img/banner.jpg" alt="Nueva temporada Mi Roperito">
+    <img class="hero__img hero__img--b" src="img/banner.jpg" alt="" aria-hidden="true">
     <div class="hero__txt">
       <span class="hero__kick">♡ Nueva temporada</span>
       <h1 class="hero__ttl">Novedades</h1>
@@ -138,7 +164,8 @@ function vistaInicio() {
   </section>
 
   <a class="band" href="#/c/novedades">
-    <img src="img/banner.jpg" alt="">
+    <img class="band__img band__img--a" src="img/banner.jpg" alt="">
+    <img class="band__img band__img--b" src="img/banner.jpg" alt="" aria-hidden="true">
     <div class="band__in">
       <span class="band__kick">Primavera · Verano</span>
       <h2 class="band__ttl">La colección que vas a amar</h2>
@@ -242,8 +269,6 @@ function vistaProducto(id) {
     : money(p.price);
   const relacionados = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id && !x.gift);
 
-  const msg = encodeURIComponent(`¡Hola! Me interesa "${p.name}" (${money(p.promo || p.price)}). ¿Sigue disponible?`);
-
   const subNom = p.sub ? nombreSub(p.cat, p.sub) : "";
 
   // Gift card: en vez de tallas se elige el monto (o uno libre hasta $10,000)
@@ -283,10 +308,6 @@ function vistaProducto(id) {
         ${selector}
         <div class="pdp__acts">
           <button class="btn-fill" data-add="${p.id}">Agregar al carrito</button>
-          <a class="btn-wa" href="${TIENDA.wa}?text=${msg}" target="_blank" rel="noopener">
-            <svg viewBox="0 0 32 32" width="16" height="16" fill="currentColor"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.2c1.5.8 3.1 1.2 4.7 1.2 6.6 0 12-5.3 12-11.9S22.6 3 16 3z"/></svg>
-            Preguntar
-          </a>
         </div>
       </div>
     </div>
@@ -297,6 +318,81 @@ function vistaProducto(id) {
       <a href="#/c/${p.cat}">Ver todo →</a></div>
       <div class="grid">${relacionados.map(tile).join("")}</div>
     </section>` : ""}`;
+}
+
+// ---------- Cuenta de clienta (maqueta) ----------
+
+function vistaCuenta() {
+  // Sin sesión: tarjeta de acceso con pestañas Iniciar sesión / Crear cuenta
+  if (!cliente) {
+    return `
+    <div class="acc">
+      <div class="crumbs"><a href="#/">Inicio</a> / <span style="color:var(--ink)">Mi cuenta</span></div>
+      <div class="acc-auth">
+        <div class="acc-auth__hd">
+          <span class="sec-hd__kick">♡ Bienvenida</span>
+          <h1>Mi cuenta</h1>
+          <p>Entra para ver tus pedidos y guardar tus datos.</p>
+        </div>
+        <div class="acc-tabs">
+          <button type="button" class="acc-tab is-on" data-auth="login">Iniciar sesión</button>
+          <button type="button" class="acc-tab" data-auth="registro">Crear cuenta</button>
+        </div>
+        <form class="acc-form" id="acc-form">
+          <label class="fld fld--reg" hidden><span>Nombre</span><input name="nombre" type="text" placeholder="Tu nombre" autocomplete="name"></label>
+          <label class="fld"><span>Correo</span><input name="email" type="email" placeholder="tucorreo@mail.com" autocomplete="email" required></label>
+          <label class="fld fld--reg" hidden><span>WhatsApp</span><input name="tel" type="tel" placeholder="272 000 0000" autocomplete="tel"></label>
+          <label class="fld"><span>Contraseña</span><input name="pass" type="password" placeholder="••••••••" autocomplete="current-password" required></label>
+          <button class="btn-fill" type="submit" id="acc-submit">Entrar</button>
+          <p class="acc-note">Maqueta: tus datos no se envían a ningún lado; la sesión se guarda solo en este navegador.</p>
+        </form>
+      </div>
+    </div>`;
+  }
+
+  // Con sesión: panel con perfil, pedidos y dirección
+  const inicial = (cliente.nombre || cliente.email || "?").trim().charAt(0).toUpperCase();
+  const pedidos = PEDIDOS_DEMO.map(o => `
+    <div class="acc-order">
+      <div class="acc-order__t">
+        <div><b>${esc(o.id)}</b><span>${esc(o.fecha)}</span></div>
+        <span class="acc-chip acc-chip--${estadoClase(o.estado)}">${esc(o.estado)}</span>
+      </div>
+      <ul>${o.items.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
+      <div class="acc-order__f"><span>Total</span><b>${money(o.total)}</b></div>
+    </div>`).join("");
+
+  return `
+  <div class="acc">
+    <div class="crumbs"><a href="#/">Inicio</a> / <span style="color:var(--ink)">Mi cuenta</span></div>
+    <div class="acc-dash">
+      <aside class="acc-side">
+        <div class="acc-profile">
+          <div class="acc-avatar">${esc(inicial)}</div>
+          <div class="acc-profile__i">
+            <b>${esc(cliente.nombre || "Clienta Mi Roperito")}</b>
+            <span>${esc(cliente.email)}</span>
+            ${cliente.tel ? `<span>${esc(cliente.tel)}</span>` : ""}
+          </div>
+        </div>
+        <button type="button" class="acc-logout" id="acc-logout">Cerrar sesión</button>
+      </aside>
+      <div class="acc-main">
+        <section class="acc-block">
+          <h2>Mis pedidos</h2>
+          <div class="acc-orders">${pedidos}</div>
+        </section>
+        <section class="acc-block">
+          <h2>Mi dirección</h2>
+          <div class="acc-card">
+            <p><b>Envío a domicilio</b></p>
+            <p>Agrega tu dirección para que tus pedidos lleguen más rápido a toda la República.</p>
+            <button type="button" class="btn-out acc-mini">Agregar dirección</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>`;
 }
 
 // ---------- Carrito ----------
@@ -485,6 +581,8 @@ function render() {
     app.innerHTML = vistaCategoria(slug, sub);
   } else if (h.startsWith("#/p/")) {
     app.innerHTML = vistaProducto(h.slice(4));
+  } else if (h.startsWith("#/cuenta")) {
+    app.innerHTML = vistaCuenta();
   } else {
     app.innerHTML = vistaInicio();
     autoCarrusel();
@@ -530,6 +628,33 @@ render._rewire = function () {
     $("#app").innerHTML = vistaCategoria(slug, sub, sel.value);
     render._rewire();
   };
+
+  // Cuenta: pestañas de acceso, envío del formulario y cerrar sesión
+  const accForm = $("#acc-form");
+  if (accForm) {
+    $$(".acc-tab").forEach(t => t.onclick = () => {
+      $$(".acc-tab").forEach(x => x.classList.remove("is-on"));
+      t.classList.add("is-on");
+      const esReg = t.dataset.auth === "registro";
+      $$(".fld--reg", accForm).forEach(f => f.hidden = !esReg);
+      $("#acc-submit").textContent = esReg ? "Crear cuenta" : "Entrar";
+    });
+    accForm.onsubmit = e => {
+      e.preventDefault();
+      const fd = new FormData(accForm);
+      const email = String(fd.get("email") || "").trim();
+      if (!email) { flash("Escribe tu correo"); return; }
+      guardarCliente({
+        nombre: String(fd.get("nombre") || "").trim(),
+        email,
+        tel: String(fd.get("tel") || "").trim(),
+      });
+      flash("¡Bienvenida! ✓");
+      render();
+    };
+  }
+  const accLogout = $("#acc-logout");
+  if (accLogout) accLogout.onclick = salirCliente;
 };
 
 // Carrusel de moods: avanza solo una pieza a la vez.
@@ -612,6 +737,7 @@ $("#mega-bd").onclick = cerrarMega;
 
 $("#cart-btn").onclick = () => abrir("cart");
 $("#cart-btn-m").onclick = () => abrir("cart");
+$("#acc-btn").onclick = () => { location.hash = "#/cuenta"; };
 $("#bn-cart").onclick = () => abrir("cart");
 $("#drw-btn").onclick = () => abrir("drw");
 $("#bn-cats").onclick = () => abrir("drw");
