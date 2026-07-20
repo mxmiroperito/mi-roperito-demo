@@ -55,12 +55,37 @@ const PRODUCTS = [
   // la retícula exacta de 16 celdas); vive en Novedades y en su ficha.
   { id: "gift-card",           name: "Gift Card Mi Roperito",       cat: "novedades", price: 300, foto: "gift-card.svg", nuevo: true, gift: true,
     desc: "Regala Mi Roperito. Elige el monto y la enviamos por correo con un diseño de la marca, código QR y un código único, listo para usarse en la tienda en línea o en la tienda física." },
+
+  // ── Catálogo real (fotos de producto, fondo blanco) ──────────────
+  // Marcados `zona:"catalogo"`: aparecen SOLO al entrar a las categorías,
+  // subcategorías y búsqueda. NO salen en el mosaico ni carruseles del
+  // inicio (ahí siguen las fotos de sesión de arriba). Temporal, hasta que
+  // la clienta decida. Para volver todo a los de sesión: borra este bloque.
+  { id: "top-drapeado-negro",  name: "Top Drapeado Strapless Negro", cat: "ropa", sub: "blusas",     price: 349, foto: "top-drapeado-negro.jpg", zona: "catalogo", nuevo: true,
+    desc: "Top strapless con drapeado al frente que estiliza la silueta. Tela suave con caída, ideal para una salida de noche o para armar un look elegante con jeans o falda." },
+  { id: "jeans-wide-azul",     name: "Jeans Wide Leg Azul",          cat: "ropa", sub: "pantalones", price: 549, foto: "jeans-wide-azul.jpg", zona: "catalogo",
+    desc: "Jeans de tiro alto y pierna ancha en mezclilla azul medio. Comodísimos y súper favorecedores; la tendencia que alarga la figura." },
+  { id: "vestido-rojo-olanes", name: "Vestido Rojo con Olanes",      cat: "ropa", sub: "vestidos",   price: 499, promo: 429, foto: "vestido-rojo-olanes.jpg", zona: "catalogo", nuevo: true,
+    desc: "Vestido corto strapless en rojo intenso con falda de dobles olanes y torso drapeado. Coqueto y con mucho movimiento para brillar en cualquier evento." },
+  { id: "short-mezclilla",     name: "Short de Mezclilla Tiro Alto", cat: "ropa", sub: "shorts",     price: 359, foto: "short-mezclilla.jpg", zona: "catalogo",
+    desc: "Short de mezclilla de tiro alto con lavado azul y corte que estiliza la pierna. El básico de verano que combina con todo." },
+  { id: "falda-satin-negra",   name: "Falda Midi Satín Negra",       cat: "ropa", sub: "faldas",     price: 389, foto: "falda-satin-negra.jpg", zona: "catalogo",
+    desc: "Falda midi de satín con caída al bies y brillo sutil. Elegante y versátil: se ve increíble con tacón o con tenis para un look relajado." },
+  { id: "bikini-negro",        name: "Bikini Texturizado Negro",     cat: "playa", price: 429, promo: 379, foto: "bikini-negro.jpg", zona: "catalogo", nuevo: true,
+    desc: "Bikini triangular en tela texturizada negra con tirantes ajustables. Clásico, favorecedor y perfecto para cualquier día de playa o alberca." },
+  { id: "conjunto-encaje-lila", name: "Conjunto de Encaje Floral Lila", cat: "lenceria", price: 459, foto: "conjunto-encaje-lila.jpg", zona: "catalogo",
+    desc: "Conjunto de encaje floral en tono lila con bralette de varillas y tanga con moños de satín. Delicado, romántico y con un acabado precioso." },
 ];
+
+// El CATÁLOGO (categorías, subcategorías y búsqueda) muestra solo los
+// productos reales `zona:"catalogo"` + la gift card. Los de sesión (sin zona)
+// se quedan únicamente en el inicio. Temporal, ver el bloque en PRODUCTS.
+const enCatalogo = (p) => p.zona === "catalogo" || p.gift;
 
 // "Novedades" no es una categoría del catálogo: agrupa lo marcado como nuevo.
 function productosDe(slug, sub) {
-  if (slug === "novedades") return PRODUCTS.filter(p => p.nuevo);
-  return PRODUCTS.filter(p => p.cat === slug && (!sub || p.sub === sub));
+  if (slug === "novedades") return PRODUCTS.filter(p => enCatalogo(p) && p.nuevo);
+  return PRODUCTS.filter(p => enCatalogo(p) && p.cat === slug && (!sub || p.sub === sub));
 }
 
 function nombreSub(cat, sub) {

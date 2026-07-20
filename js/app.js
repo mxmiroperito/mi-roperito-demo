@@ -125,7 +125,9 @@ function vistaInicio() {
   const piezas = [];
   // La gift card no entra al mosaico (mantendría 17 celdas y rompería
   // la retícula exacta); se compra desde Novedades o su ficha.
-  PRODUCTS.filter(p => !p.gift).forEach((p, i) => {
+  // Los productos `zona:"catalogo"` (fondo blanco) tampoco: el inicio se
+  // queda con las fotos de sesión. Ver el bloque temporal en data.js.
+  PRODUCTS.filter(p => !p.gift && p.zona !== "catalogo").forEach((p, i) => {
     if (i === 4) piezas.push(tileEditorial(EDITORIALES[0]));
     if (i === 8) piezas.push(tileEditorial(EDITORIALES[1]));
     piezas.push(tile(p));
@@ -267,7 +269,10 @@ function vistaProducto(id) {
     : p.promo
     ? `${money(p.promo)} <s>${money(p.price)}</s>`
     : money(p.price);
-  const relacionados = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id && !x.gift);
+  // Relacionados de la MISMA zona que el producto abierto (catálogo con
+  // catálogo, sesión con sesión) para no mezclar fondo blanco con sesión.
+  const mismaZona = p.zona === "catalogo" ? (x => x.zona === "catalogo") : (x => x.zona !== "catalogo");
+  const relacionados = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id && !x.gift && mismaZona(x));
 
   const subNom = p.sub ? nombreSub(p.cat, p.sub) : "";
 
@@ -752,9 +757,12 @@ function abrirBusqueda() {
 function pintarResultados(q) {
   const box = $("#search-res");
   const t = q.trim().toLowerCase();
-  if (!t) { box.innerHTML = `<p class="srch__hint">Escribe para buscar entre ${PRODUCTS.length} productos.</p>`; return; }
+  // La búsqueda es parte del catálogo: solo devuelve productos reales
+  // (zona:"catalogo" + gift), no las fotos de sesión del inicio.
+  const buscables = PRODUCTS.filter(enCatalogo);
+  if (!t) { box.innerHTML = `<p class="srch__hint">Escribe para buscar entre ${buscables.length} productos.</p>`; return; }
   const catName = slug => (CATS.find(c => c.slug === slug) || {}).name || "";
-  const res = PRODUCTS.filter(p =>
+  const res = buscables.filter(p =>
     p.name.toLowerCase().includes(t) ||
     (p.desc || "").toLowerCase().includes(t) ||
     catName(p.cat).toLowerCase().includes(t) ||
