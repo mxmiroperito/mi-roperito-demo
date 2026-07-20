@@ -25,7 +25,9 @@ function tile(p) {
   const tag = p.promo
     ? '<span class="tile__tag is-sale">Oferta</span>'
     : (p.nuevo ? '<span class="tile__tag">Nuevo</span>' : "");
-  const precio = p.promo
+  const precio = p.gift
+    ? `Desde ${money(p.price)}`
+    : p.promo
     ? `${money(p.promo)} <s>${money(p.price)}</s>`
     : money(p.price);
   return `
@@ -92,7 +94,9 @@ function vistaInicio() {
 
   // Mosaico: productos + bloques editoriales intercalados, todo pegado.
   const piezas = [];
-  PRODUCTS.forEach((p, i) => {
+  // La gift card no entra al mosaico (mantendría 17 celdas y rompería
+  // la retícula exacta); se compra desde Novedades o su ficha.
+  PRODUCTS.filter(p => !p.gift).forEach((p, i) => {
     if (i === 4) piezas.push(tileEditorial(EDITORIALES[0]));
     if (i === 8) piezas.push(tileEditorial(EDITORIALES[1]));
     piezas.push(tile(p));
@@ -213,14 +217,36 @@ function vistaProducto(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return vistaInicio();
   const cat = CATS.find(c => c.slug === p.cat);
-  const precio = p.promo
+  const precio = p.gift
+    ? `<span id="gc-precio">${money(p.price)}</span>`
+    : p.promo
     ? `${money(p.promo)} <s>${money(p.price)}</s>`
     : money(p.price);
-  const relacionados = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id);
+  const relacionados = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id && !x.gift);
 
   const msg = encodeURIComponent(`¡Hola! Me interesa "${p.name}" (${money(p.promo || p.price)}). ¿Sigue disponible?`);
 
   const subNom = p.sub ? nombreSub(p.cat, p.sub) : "";
+
+  // Gift card: en vez de tallas se elige el monto (o uno libre hasta $10,000)
+  const selector = p.gift ? `
+        <p class="pdp__lbl">Elige el monto</p>
+        <div class="sizes" id="gc-m">
+          <button class="is-on" data-monto="300">$300</button><button data-monto="500">$500</button><button data-monto="1000">$1,000</button><button data-monto="otro">Otro</button>
+        </div>
+        <div id="gc-otro" hidden style="margin:10px 0 4px">
+          <input id="gc-inp" type="number" min="100" max="10000" step="50" inputmode="numeric"
+            placeholder="Tu monto ($100 a $10,000)"
+            style="width:100%;max-width:240px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:400 14px/1 var(--body)">
+        </div>
+        <p style="font:400 12.5px/1.6 var(--body);color:var(--muted);margin:8px 0 0">
+          Llega por correo con código QR y código único al acreditarse el pago.
+          Quien la recibe la canjea en su cuenta o la muestra en la tienda física.
+        </p>` : `
+        <p class="pdp__lbl">Talla</p>
+        <div class="sizes" id="sizes">
+          <button class="is-on">CH</button><button>M</button><button>G</button><button>XG</button>
+        </div>`;
 
   return `
   <div class="pdp">
@@ -236,10 +262,7 @@ function vistaProducto(id) {
         <h1 class="pdp__t">${esc(p.name)}</h1>
         <div class="pdp__pr">${precio}</div>
         <p class="pdp__d">${esc(p.desc)}</p>
-        <p class="pdp__lbl">Talla</p>
-        <div class="sizes" id="sizes">
-          <button class="is-on">CH</button><button>M</button><button>G</button><button>XG</button>
-        </div>
+        ${selector}
         <div class="pdp__acts">
           <button class="btn-fill" data-add="${p.id}">Agregar al carrito</button>
           <a class="btn-wa" href="${TIENDA.wa}?text=${msg}" target="_blank" rel="noopener">
@@ -262,12 +285,42 @@ function vistaProducto(id) {
 // ---------- Carrito ----------
 
 function agregar(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+
+  // Gift card: se agrega con el monto elegido; cada monto es su propia línea
+  if (p?.gift) {
+    const btn = $("#gc-m .is-on");
+    const inp = $("#gc-inp");
+    const monto = btn?.dataset.monto === "otro"
+      ? Math.round(Number(inp?.value) || 0)
+      : Number(btn?.dataset.monto || 0);
+    if (monto < 100 || monto > 10000) {
+      flash("Elige un monto entre $100 y $10,000");
+      return;
+    }
+    const ex = carrito.find(i => i.id === id && i.monto === monto);
+    if (ex) ex.qty++;
+    else carrito.push({ id, qty: 1, monto });
+    pintarCarrito();
+    flash(`Agregado: Gift Card de ${money(monto)} ✓`);
+    return;
+  }
+
   const ex = carrito.find(i => i.id === id);
   if (ex) ex.qty++;
   else carrito.push({ id, qty: 1 });
   pintarCarrito();
-  const p = PRODUCTS.find(x => x.id === id);
   flash("Agregado: " + (p ? p.name : "producto") + " ✓");
+}
+
+// Precio unitario de una línea del carrito (la gift card vale su monto)
+function unit(i) {
+  const p = PRODUCTS.find(x => x.id === i.id);
+  return i.monto || p.promo || p.price;
+}
+function lineName(i) {
+  const p = PRODUCTS.find(x => x.id === i.id);
+  return i.monto ? `${p.name} · ${money(i.monto)}` : p.name;
 }
 
 function pintarCarrito() {
@@ -291,36 +344,33 @@ function pintarCarrito() {
     return;
   }
 
-  const lineas = carrito.map(i => {
+  // Las líneas se identifican por su POSICIÓN (no por id): puede haber
+  // varias gift cards con montos distintos del mismo producto.
+  const lineas = carrito.map((i, idx) => {
     const p = PRODUCTS.find(x => x.id === i.id);
-    const u = p.promo || p.price;
+    const u = unit(i);
     return `
       <div class="cart-l">
         <img src="${IMG(p.foto)}" alt="${esc(p.name)}">
         <div class="cart-l__i">
-          <div class="cart-l__n">${esc(p.name)}</div>
+          <div class="cart-l__n">${esc(lineName(i))}</div>
           <div class="cart-l__p">${money(u)} c/u</div>
           <div class="qty">
-            <button data-dec="${p.id}" aria-label="Menos">−</button>
+            <button data-dec="${idx}" aria-label="Menos">−</button>
             <b>${i.qty}</b>
-            <button data-inc="${p.id}" aria-label="Más">+</button>
-            <button class="cart-l__x" data-del="${p.id}">Quitar</button>
+            <button data-inc="${idx}" aria-label="Más">+</button>
+            <button class="cart-l__x" data-del="${idx}">Quitar</button>
           </div>
         </div>
         <div style="font:600 14px/1 var(--body)">${money(u * i.qty)}</div>
       </div>`;
   }).join("");
 
-  const total = carrito.reduce((s, i) => {
-    const p = PRODUCTS.find(x => x.id === i.id);
-    return s + (p.promo || p.price) * i.qty;
-  }, 0);
+  const total = carrito.reduce((s, i) => s + unit(i) * i.qty, 0);
   const falta = TIENDA.envioGratis - total;
 
-  const detalle = carrito.map(i => {
-    const p = PRODUCTS.find(x => x.id === i.id);
-    return `• ${p.name} x${i.qty} — ${money((p.promo || p.price) * i.qty)}`;
-  }).join("\n");
+  const detalle = carrito.map(i =>
+    `• ${lineName(i)} x${i.qty} — ${money(unit(i) * i.qty)}`).join("\n");
   const msg = encodeURIComponent(`¡Hola! Quiero pedir:\n${detalle}\n\nTotal: ${money(total)}`);
 
   body.innerHTML = `
@@ -381,6 +431,7 @@ $("#ft-cats").innerHTML = [
   ["Blusas y Tops", "#/c/ropa/blusas"],
   ["Jeans y Pantalones", "#/c/ropa/jeans"],
   ["Deportiva", "#/c/deportiva"],
+  ["Gift Card", "#/p/gift-card"],
 ].map(([n, h]) => `<li><a href="${h}">${esc(n)}</a></li>`).join("");
 
 // ---------- Router ----------
@@ -412,6 +463,26 @@ function render() {
 
 // Vuelve a enlazar lo que se pinta dinámicamente
 render._rewire = function () {
+  // Selector de monto de la gift card
+  const gcm = $("#gc-m");
+  if (gcm) {
+    const precio = $("#gc-precio"), otro = $("#gc-otro"), inp = $("#gc-inp");
+    gcm.onclick = e => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      $$("#gc-m button").forEach(x => x.classList.remove("is-on"));
+      b.classList.add("is-on");
+      const esOtro = b.dataset.monto === "otro";
+      otro.hidden = !esOtro;
+      if (esOtro) { inp.focus(); }
+      else precio.textContent = money(Number(b.dataset.monto));
+    };
+    if (inp) inp.oninput = () => {
+      const v = Math.round(Number(inp.value) || 0);
+      if (v >= 100 && v <= 10000) precio.textContent = money(v);
+    };
+  }
+
   const sizes = $("#sizes");
   if (sizes) sizes.onclick = e => {
     const b = e.target.closest("button");
@@ -471,17 +542,17 @@ document.addEventListener("click", e => {
   if (add) { agregar(add.dataset.add); return; }
 
   const inc = e.target.closest("[data-inc]");
-  if (inc) { carrito.find(i => i.id === inc.dataset.inc).qty++; pintarCarrito(); return; }
+  if (inc) { carrito[Number(inc.dataset.inc)].qty++; pintarCarrito(); return; }
 
   const dec = e.target.closest("[data-dec]");
   if (dec) {
-    const it = carrito.find(i => i.id === dec.dataset.dec);
+    const it = carrito[Number(dec.dataset.dec)];
     if (it.qty > 1) it.qty--; else carrito = carrito.filter(i => i !== it);
     pintarCarrito(); return;
   }
 
   const del = e.target.closest("[data-del]");
-  if (del) { carrito = carrito.filter(i => i.id !== del.dataset.del); pintarCarrito(); return; }
+  if (del) { carrito = carrito.filter((_, idx) => idx !== Number(del.dataset.del)); pintarCarrito(); return; }
 
   const close = e.target.closest("[data-close]");
   if (close) { cerrar(close.dataset.close); return; }

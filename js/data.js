@@ -49,6 +49,11 @@ const PRODUCTS = [
     desc: "Bikini de estampado tropical con tirantes ajustables. Para brillar en la playa o la alberca." },
   { id: "traje-entero-flores", name: "Traje Entero Flores",         cat: "banadores", price: 529, foto: "traje-entero-flores.jpg", nuevo: true,
     desc: "Traje de baño entero con estampado floral y espalda descubierta. Cómodo, favorecedor y con mucho estilo." },
+  // Gift card: el precio es el MONTO que elige la clienta ($300/$500/$1,000
+  // o uno libre hasta $10,000). No sale en el mosaico del inicio (rompería
+  // la retícula exacta de 16 celdas); vive en Novedades y en su ficha.
+  { id: "gift-card",           name: "Gift Card Mi Roperito",       cat: "novedades", price: 300, foto: "gift-card.svg", nuevo: true, gift: true,
+    desc: "Regala Mi Roperito. Elige el monto y la enviamos por correo con un diseño de la marca, código QR y un código único, listo para usarse en la tienda en línea o en la tienda física." },
 ];
 
 // "Novedades" no es una categoría del catálogo: agrupa lo marcado como nuevo.

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1475" viewBox="0 0 1180 1475">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fdf6f8"/>
+      <stop offset="1" stop-color="#f7dce9"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e5387f"/>
+      <stop offset="1" stop-color="#9c1e56"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="26" stdDeviation="34" flood-color="#9c1e56" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="1180" height="1475" fill="url(#bg)"/>
+  <circle cx="120" cy="180" r="150" fill="#b39ddb" opacity="0.25"/>
+  <circle cx="1080" cy="1320" r="200" fill="#c6e34d" opacity="0.28"/>
+  <circle cx="1060" cy="170" r="90" fill="#f7a8cd" opacity="0.5"/>
+  <circle cx="130" cy="1300" r="70" fill="#e5387f" opacity="0.22"/>
+
+  <!-- listón vertical -->
+  <g transform="translate(590,737) rotate(-8)">
+    <!-- tarjeta -->
+    <g filter="url(#soft)">
+      <rect x="-420" y="-264" width="840" height="528" rx="42" fill="url(#card)"/>
+    </g>
+    <!-- listón -->
+    <rect x="-420" y="-46" width="840" height="92" fill="#fdf6f8" opacity="0.16"/>
+    <rect x="-70" y="-264" width="140" height="528" fill="#fdf6f8" opacity="0.16"/>
+    <!-- moño -->
+    <g transform="translate(0,-264)">
+      <path d="M0 6 C -46 -66 -132 -70 -138 -20 C -142 16 -66 26 0 6 Z" fill="#c6e34d"/>
+      <path d="M0 6 C 46 -66 132 -70 138 -20 C 142 16 66 26 0 6 Z" fill="#c6e34d"/>
+      <circle cx="0" cy="2" r="26" fill="#aecb2f"/>
+    </g>
+    <!-- textos -->
+    <text x="0" y="-108" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="40" letter-spacing="18" font-weight="bold" fill="#f2b9d3">GIFT CARD</text>
+    <text x="0" y="8" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="104" fill="#fdf6f8">mi roperito</text>
+    <text x="0" y="96" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" letter-spacing="6" fill="#fdf6f8" opacity="0.85">♥ regala estilo ♥</text>
+    <text x="0" y="196" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" letter-spacing="10" font-weight="bold" fill="#f2b9d3">MR-XXXX-XXXX</text>
+  </g>
+
+  <text x="590" y="1272" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="44" letter-spacing="4" font-weight="bold" fill="#211a1f">ELIGE TU MONTO</text>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="bold" text-anchor="middle">
+    <rect x="200" y="1310" width="220" height="84" rx="42" fill="#e5387f"/>
+    <text x="310" y="1364" fill="#fdf6f8">$300</text>
+    <rect x="480" y="1310" width="220" height="84" rx="42" fill="#b39ddb"/>
+    <text x="590" y="1364" fill="#211a1f">$500</text>
+    <rect x="760" y="1310" width="220" height="84" rx="42" fill="#c6e34d"/>
+    <text x="870" y="1364" fill="#211a1f">$1,000+</text>
+  </g>
+</svg>
