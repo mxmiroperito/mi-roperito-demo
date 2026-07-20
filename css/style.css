@@ -71,8 +71,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 20px; padding: 14px 24px; max-width: var(--max); margin: 0 auto;
 }
 .logo { line-height: 1; flex: none; }
-.logo b { display: block; font: 600 30px/.86 var(--display); letter-spacing: .01em; white-space: nowrap; }
-.logo b em { font-style: italic; color: var(--accent); }
+/* Logo "Mi Roperito" en rosa (legible sobre el header oscuro) */
+.logo b { display: block; font: 600 30px/.86 var(--display); letter-spacing: .01em; white-space: nowrap; color: #F49AB9; }
+.logo b em { font-style: italic; color: #F49AB9; }
 .logo i { display: block; font: 400 13px/1 'Sacramento', cursive; color: rgba(255, 255, 255, .72); font-style: normal; margin-top: 1px; }
 
 .nav { display: flex; align-items: center; gap: 26px; }
@@ -177,7 +178,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .cat { display: flex; flex-direction: column; align-items: center; }
 .cat__c {
   width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; position: relative;
-  background: linear-gradient(180deg, #FFFFFF, #FCE7EE);
+  background: #fff;
   box-shadow: 0 8px 22px rgba(120, 40, 70, .12);
   transition: transform .3s var(--ease-out, ease), box-shadow .3s ease;
 }
@@ -380,6 +381,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .ft__col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; font: 400 13px/1 var(--body); opacity: .7; }
 .ft__col li a:hover, .ft__col li button:hover { opacity: 1; color: var(--accent-2); }
 .ft__col p { font: 400 13px/1.6 var(--body); opacity: .7; }
+/* Mini mapa del footer: compacto y clicable (abre Google Maps) */
+.ft__map {
+  display: block; position: relative; height: 82px; margin-top: 12px; max-width: 300px;
+  border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .16);
+}
+.ft__map iframe { width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
+.ft__map-cta {
+  position: absolute; right: 7px; bottom: 6px; z-index: 2;
+  background: rgba(20, 12, 16, .78); color: #fff; font: 500 11px/1 var(--body); letter-spacing: .02em;
+  padding: 4px 9px; border-radius: 999px; transition: background .2s;
+}
+.ft__map:hover .ft__map-cta { background: var(--accent); }
 .ft__acc-t { display: none; }
 .ft__bar { border-top: 1px solid rgba(255, 255, 255, .12); }
 .ft__bar-in {
@@ -683,8 +696,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .ft__acc-t svg { transition: transform .25s; flex: none; }
   .ft__col.is-open .ft__acc-t svg { transform: rotate(180deg); }
   .ft__col h3 { display: none; }
-  .ft__col ul, .ft__col p { max-height: 0; overflow: hidden; transition: max-height .3s, padding .3s; padding: 0; }
+  .ft__col ul, .ft__col p, .ft__col .ft__map { max-height: 0; overflow: hidden; transition: max-height .3s, padding .3s, margin .3s; padding: 0; }
   .ft__col.is-open ul, .ft__col.is-open p { max-height: 320px; padding: 0 0 18px; }
+  .ft__col.is-open .ft__map { max-height: 120px; margin-top: 12px; margin-bottom: 16px; }
   .ft__brand { padding-bottom: 22px; }
 
   .bnav {

@@ -15,7 +15,7 @@ const CATS = [
   { slug: "deportiva", name: "Deportiva", corto: "Deportiva", foto: "short-mezclilla.jpg" },
   { slug: "playa",     name: "Playa",     corto: "Playa",     foto: "bikini-negro.jpg" },
   { slug: "lenceria",  name: "Lencería",  corto: "Lencería",  foto: "conjunto-encaje-lila.jpg" },
-  { slug: "novedades", name: "Novedades", corto: "Novedades", foto: "vestido-rojo-olanes.jpg" },
+  { slug: "novedades", name: "Novedades", corto: "Novedades", foto: "gift-card.svg" },
 ];
 
 // Subcategorías por categoría. Hoy solo "Ropa" se divide;

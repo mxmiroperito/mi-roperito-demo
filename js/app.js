@@ -156,7 +156,7 @@ function vistaInicio() {
       <span class="hero__kick">♡ Nueva temporada</span>
       <h1 class="hero__ttl">Novedades</h1>
       <p class="hero__sub">Tu outfit coqueto ya te está esperando</p>
-      <a class="btn-out" href="#/c/novedades">Comprar <span style="font-size:15px">→</span></a>
+      <a class="btn-out" href="#/c/ropa">Comprar <span style="font-size:15px">→</span></a>
     </div>
   </section>
 
@@ -165,7 +165,7 @@ function vistaInicio() {
     <div class="cats__row">${circulos}</div>
   </section>
 
-  <a class="band" href="#/c/novedades">
+  <a class="band" href="#/c/ropa">
     <img class="band__img band__img--a" src="img/banner.jpg" alt="">
     <img class="band__img band__img--b" src="img/banner.jpg" alt="" aria-hidden="true">
     <div class="band__in">
@@ -201,10 +201,10 @@ function vistaCategoria(slug, sub = "", orden = "destacados") {
   // LANDING DE SUBCATEGORÍAS: si la categoría tiene subcategorías y aún no se
   // eligió una, mostramos un mosaico (imagen + título) que lleva a cada una.
   if (subs.length && !sub) {
-    // Cada subcategoría se muestra con una foto de producto real (fondo blanco).
+    // Cada subcategoría tiene su propia imagen editorial de marca (SVG premium).
     const tiles = subs.map(s => `
         <a class="subcat-tile" href="#/c/${slug}/${s.slug}">
-          <img src="${IMG(s.foto)}" alt="${esc(s.name)}" loading="lazy">
+          <img src="img/subcats/${s.slug}.svg" alt="${esc(s.name)}" loading="lazy">
           <div class="subcat-tile__t"><h3>${esc(s.name)}</h3><span>Ver productos →</span></div>
         </a>`).join("");
     return `
