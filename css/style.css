@@ -3,23 +3,24 @@
    Estructura tipo Shasa + identidad Mi Roperito
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@400;500;600;700&family=Sacramento&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg: #FBF3EF;
+  /* Sitio BLANCO con detalles en rosa pastel */
+  --bg: #FFFFFF;
   --surface: #FFFFFF;
-  --header: var(--ink);   /* mismo color que el fondo del footer */
+  --header: #FFFFFF;      /* header blanco */
   --pink: #F7CAD8;
   --pink-soft: #FCE7EE;
-  --accent: #CE6C88;
-  --accent-2: #E7A6BB;
-  --beige: #EEE1D2;
-  --ink: #453539;
-  --muted: #9C8A8F;
-  --line: rgba(69, 53, 57, .13);
-  --bar: #241C20;
-  --display: 'Cormorant Garamond', Georgia, serif;
-  --body: 'Jost', system-ui, sans-serif;
+  --accent: #EC9CBB;      /* rosa pastel (acento) */
+  --accent-2: #F5C4D9;    /* rosa pastel claro */
+  --beige: #F6ECF1;       /* placeholder muy claro con tinte rosa */
+  --ink: #3A3138;         /* texto oscuro suave */
+  --muted: #9B9096;
+  --line: rgba(58, 49, 56, .12);
+  --bar: #F7CAD8;         /* marquesina: rosa pastel (texto oscuro) */
+  --display: 'Playfair Display', Georgia, serif;
+  --body: 'Poppins', system-ui, sans-serif;
   --max: 1440px;
 
   /* Relleno de los lados del hero y el banner (solo se ve en monitores > 1440px,
@@ -49,7 +50,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---------- Marquesina ---------- */
 .ann {
-  background: var(--bar); color: #fff;
+  background: var(--bar); color: var(--ink);
   overflow: hidden; white-space: nowrap;
 }
 .ann__run { display: inline-flex; animation: mrq 32s linear infinite; }
@@ -63,30 +64,30 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ---------- Header ---------- */
 .hd {
   position: sticky; top: 0; z-index: 50;
-  background: var(--header); border-bottom: 1px solid rgba(255, 255, 255, .12);
-  color: #fff;   /* header oscuro: texto e iconos (currentColor) en claro */
+  background: var(--header); border-bottom: 1px solid var(--line);
+  color: var(--ink);   /* header blanco: texto e iconos (currentColor) oscuros */
 }
 .hd__in {
   display: flex; align-items: center; justify-content: space-between;
   gap: 20px; padding: 14px 24px; max-width: var(--max); margin: 0 auto;
 }
 .logo { line-height: 1; flex: none; }
-/* Logo "Mi Roperito" en rosa (legible sobre el header oscuro) */
-.logo b { display: block; font: 600 30px/.86 var(--display); letter-spacing: .01em; white-space: nowrap; color: #F49AB9; }
-.logo b em { font-style: italic; color: #F49AB9; }
-.logo i { display: block; font: 400 13px/1 'Sacramento', cursive; color: rgba(255, 255, 255, .72); font-style: normal; margin-top: 1px; }
+/* Logo "Mi Roperito": "Mi" oscuro + "Roperito" en rosa pastel, sobre header blanco */
+.logo b { display: block; font: 600 30px/.86 var(--display); letter-spacing: .01em; white-space: nowrap; color: var(--ink); }
+.logo b em { font-style: italic; color: var(--accent); }
+.logo i { display: block; font: 400 13px/1 var(--body); color: var(--muted); font-style: normal; margin-top: 1px; }
 
 .nav { display: flex; align-items: center; gap: 26px; }
 .nav a, .nav button {
   font: 600 13px/1 var(--body); letter-spacing: .06em; text-transform: uppercase;
   padding: 6px 0; border-bottom: 1.5px solid transparent; transition: border-color .2s, color .2s;
 }
-.nav a:hover, .nav button:hover { border-bottom-color: var(--accent-2); color: var(--accent-2); }
-.nav .is-sale { color: var(--accent-2); }
+.nav a:hover, .nav button:hover { border-bottom-color: var(--accent); color: var(--accent); }
+.nav .is-sale { color: var(--accent); }
 
 .hd__acts { display: flex; align-items: center; gap: 16px; flex: none; }
 .hd__acts button { display: flex; align-items: center; gap: 7px; font: 600 12px/1 var(--body); letter-spacing: .06em; }
-.hd__acts button:hover { color: var(--accent-2); }
+.hd__acts button:hover { color: var(--accent); }
 .pill {
   position: absolute; top: -7px; right: -8px; min-width: 17px; height: 17px; padding: 0 4px;
   background: var(--accent); color: #fff; border-radius: 999px;
@@ -363,30 +364,30 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .subcat-tile:hover .subcat-tile__t span { gap: 11px; }
 
-/* ---------- Footer ---------- */
-.ft { background: var(--ink); color: #fff; margin-top: 20px; }
+/* ---------- Footer (blanco con detalles rosa) ---------- */
+.ft { background: #fff; color: var(--ink); margin-top: 20px; border-top: 1px solid var(--line); }
 .ft[hidden] { display: none; }
 .ft__g {
   max-width: var(--max); margin: 0 auto;
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 30px 24px 26px;
 }
 .ft__b { font: 600 26px/1 var(--display); }
-.ft__b em { font-style: italic; color: var(--accent-2); }
+.ft__b em { font-style: italic; color: var(--accent); }
 .ft__slog { margin-top: 12px; font: 400 13px/1.6 var(--body); opacity: .7; max-width: 30ch; }
 .ft__soc { display: flex; gap: 10px; margin-top: 16px; }
 .ft__soc a {
-  width: 38px; height: 38px; border-radius: 999px; background: rgba(255, 255, 255, .1);
-  display: flex; align-items: center; justify-content: center; transition: background .2s;
+  width: 38px; height: 38px; border-radius: 999px; background: var(--pink-soft);
+  display: flex; align-items: center; justify-content: center; transition: background .2s, color .2s;
 }
-.ft__soc a:hover { background: var(--accent); }
+.ft__soc a:hover { background: var(--accent); color: #fff; }
 .ft__col h3 { margin-bottom: 12px; font: 600 12px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
 .ft__col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; font: 400 13px/1 var(--body); opacity: .7; }
-.ft__col li a:hover, .ft__col li button:hover { opacity: 1; color: var(--accent-2); }
+.ft__col li a:hover, .ft__col li button:hover { opacity: 1; color: var(--accent); }
 .ft__col p { font: 400 13px/1.6 var(--body); opacity: .7; }
 /* Mini mapa del footer: compacto y clicable (abre Google Maps) */
 .ft__map {
   display: block; position: relative; height: 82px; margin-top: 12px; max-width: 300px;
-  border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 10px; overflow: hidden; border: 1px solid var(--line);
 }
 .ft__map iframe { width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
 .ft__map-cta {
@@ -692,7 +693,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .ft__g { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 78px; }
 
   /* Footer acordeón (como la referencia móvil) */
-  .ft__col { border-bottom: 1px solid rgba(255, 255, 255, .14); }
+  .ft__col { border-bottom: 1px solid var(--line); }
   .ft__acc-t {
     display: flex; align-items: center; justify-content: space-between; width: 100%;
     padding: 18px 0; font: 600 13px/1.2 var(--body); letter-spacing: .08em; text-transform: uppercase;
