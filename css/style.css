@@ -690,7 +690,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .band__in { padding: 0 24px; }
   /* Padding inferior extra para que el último acordeón ("¿Dónde estamos?")
      quede por encima de la burbuja de WhatsApp y su chevron no quede tapado. */
-  .ft__g { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 78px; }
+  .ft__g { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 22px; }
 
   /* Footer acordeón (como la referencia móvil) */
   .ft__col { border-bottom: 1px solid var(--line); }
@@ -718,7 +718,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   }
   .bnav .is-on { color: var(--accent); }
   .bnav-pad { height: 66px; }
-  .wa { bottom: 80px; right: 14px; width: 48px; height: 48px; }
+  .wa { bottom: 80px; left: 14px; right: auto; width: 48px; height: 48px; }
   .toast { bottom: 84px; }
 }
 
